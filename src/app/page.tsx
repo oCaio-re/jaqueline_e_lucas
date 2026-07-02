@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Volume2, Copy, Check, Calendar, MapPin, Menu, X, ChevronDown, Gift, ArrowLeft } from 'lucide-react';
+import { Play, Pause, Volume2, Copy, Check, Calendar, MapPin, Menu, X, ChevronDown, Gift, ArrowLeft, Landmark, Smartphone } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { WEDDING_CONFIG } from '@/config/wedding';
 
@@ -662,55 +662,85 @@ export default function Home() {
       <section className="gifts" id="presentes">
         <div className="section-frame">
           <p className="overline reveal-up">Com todo o carinho</p>
-          <h2 className="script-title reveal-up">Presença &amp; Presentes</h2>
+          <h2 className="script-title reveal-up">Presentes</h2>
           <p className="gifts__intro reveal-up">
             A sua presença é, sem dúvida, o nosso maior presente. 🤍 Mas, se o seu coração desejar abençoar e ofertar nas nossas vidas, fá-lo-á com toda a liberdade — e com a nossa mais sincera gratidão.
           </p>
           <div className="gifts__methods">
             <div className="pay-card reveal-up">
-              <div className="pay-card__icon">🏦</div>
-              <p className="pay-card__label">Transferência · IBAN</p>
-              <p className="pay-card__value" id="ibanValue">{WEDDING_CONFIG.iban}</p>
-              <button
-                className="btn btn--solid btn--sm inline-flex items-center gap-2"
-                onClick={() => handleCopy('iban')}
-              >
-                {copiedType === 'iban' ? (
-                  <>
-                    <Check className="h-3.5 w-3.5" /> Copiado!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3.5 w-3.5" /> Copiar IBAN
-                  </>
-                )}
-              </button>
+              <Landmark className="pay-card__icon" />
+              <h3 className="pay-card__label">Transferência Bancária</h3>
+              
+              <div className="pay-card__ornament">
+                <span className="ornament-line"></span>
+                <span className="ornament-diamond">♦</span>
+                <span className="ornament-line"></span>
+              </div>
+
+              <div className="pay-card__content">
+                <span className="pay-card__value" id="ibanValue">{WEDDING_CONFIG.iban}</span>
+                <button
+                  className="pay-card__copy-btn"
+                  onClick={() => handleCopy('iban')}
+                  aria-label="Copiar IBAN"
+                >
+                  {copiedType === 'iban' ? (
+                    <>
+                      <Check className="h-3.5 w-3.5" /> Copiado
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3.5 w-3.5" /> Copiar IBAN
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <p className="pay-card__holder">
+                Titular da Conta
+                <strong>Lucas Alves &amp; Jaqueline S. Silva</strong>
+              </p>
             </div>
+
             <div className="pay-card reveal-up">
-              <div className="pay-card__icon">📱</div>
-              <p className="pay-card__label">MB WAY</p>
-              <p className="pay-card__value" id="mbwayValue">{WEDDING_CONFIG.mbway}</p>
-              <button
-                className="btn btn--solid btn--sm inline-flex items-center gap-2"
-                onClick={() => handleCopy('mbway')}
-              >
-                {copiedType === 'mbway' ? (
-                  <>
-                    <Check className="h-3.5 w-3.5" /> Copiado!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3.5 w-3.5" /> Copiar número
-                  </>
-                )}
-              </button>
+              <Smartphone className="pay-card__icon" />
+              <h3 className="pay-card__label">MB WAY</h3>
+              
+              <div className="pay-card__ornament">
+                <span className="ornament-line"></span>
+                <span className="ornament-diamond">♦</span>
+                <span className="ornament-line"></span>
+              </div>
+
+              <div className="pay-card__content">
+                <span className="pay-card__value" id="mbwayValue">{WEDDING_CONFIG.mbway}</span>
+                <button
+                  className="pay-card__copy-btn"
+                  onClick={() => handleCopy('mbway')}
+                  aria-label="Copiar número"
+                >
+                  {copiedType === 'mbway' ? (
+                    <>
+                      <Check className="h-3.5 w-3.5" /> Copiado
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3.5 w-3.5" /> Copiar Número
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <p className="pay-card__holder">
+                Titular da Conta
+                <strong>Lucas Alves &amp; Jaqueline S. Silva</strong>
+              </p>
             </div>
           </div>
-          <p className="gifts__note reveal-up">Titular: Jaqueline &amp; Lucas</p>
-          <div className="flex justify-center mt-8 reveal-up">
+          <div className="flex justify-center mt-10 reveal-up">
             <button
               onClick={() => setIsGiftsModalOpen(true)}
-              className="btn btn--solid inline-flex items-center gap-2 cursor-pointer font-semibold uppercase tracking-wider text-xs md:text-sm py-3 px-6 rounded-full"
+              className="btn btn--solid inline-flex items-center gap-2 cursor-pointer font-semibold uppercase tracking-wider text-xs md:text-sm py-3 px-8 rounded-full"
             >
               <Gift className="h-4 w-4" />
               Escolher da Lista de Presentes
@@ -1256,7 +1286,7 @@ function GiftsModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
                     </button>
                   </div>
                   <p className="text-[10px] text-cream/50 text-left leading-relaxed">
-                    Titular: Jaqueline &amp; Lucas
+                    Titular: Lucas Alves &amp; Jaqueline Santos da Silva
                   </p>
                 </div>
 

@@ -2,8 +2,8 @@ export const WEDDING_CONFIG = {
   weddingDate: '2026-09-26T00:00:00', // Countdown target date (typically midnight of wedding day)
   eventTitle: 'Casamento de Jaqueline & Lucas',
   eventLocation: 'Quinta de Marzovelos, R. Qta de Baixo n.º 2 B, 3510-014 Viseu',
-  iban: 'PT50 0000 0000 0000 0000 0000 0',
-  mbway: '+351 900 000 000',
+  iban: 'PT50 3560 0001 9109 9742 5707 5',
+  mbway: '931 322 541',
   youtubeVideoId: 'dwF2Nyhmpdg',
   bgMusicPath: '/so-voce-anderson-freire.mp3',
   heroBgPath: '/img-hero.jpg',
