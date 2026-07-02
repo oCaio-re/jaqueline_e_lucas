@@ -16,6 +16,15 @@ The response submitted by a Guest, marking their presence ("Sim") or absence ("N
 ### Lista de Convidados (Guest List)
 The master list of all invited Guests stored in the database.
 
+### Presente (Gift)
+A symbolic wedding gift (e.g., "Romance Dinner", "Spa Day") chosen by a Guest to support the couple. Gifts are represented visually and have suggested monetary values, but the actual transaction is voluntary.
+
+### Lista de Presentes (Gift List)
+A curated list of symbolic Gifts displayed on the website. Guests can select a Gift, customize or choose a suggested monetary value, and receive instructions on how to transfer the funds.
+
+### Pix
+A Brazilian instant payment system. If selected as the payment method for a Gift, the system generates a dynamic BR Code payload (including the amount and a description) and displays a QR Code along with a copy-paste code.
+
 ---
 
 ## Domain Rules

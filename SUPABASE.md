@@ -1,6 +1,6 @@
 # 🛠️ Supabase Database Setup
 
-To make the search-based RSVP validation and admin guest manager function correctly, you must set up the `convidados` table in your Supabase project.
+To make the search-based RSVP validation function correctly, you must set up the `convidados` table in your Supabase project.
 
 ## 1. Create the Table
 

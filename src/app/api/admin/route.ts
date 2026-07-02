@@ -3,8 +3,7 @@ import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
-// GET: Fetches all guests from Supabase
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const { data: convidados, error } = await supabase
       .from('convidados')
@@ -23,36 +22,42 @@ export async function GET() {
   }
 }
 
-// PATCH: Updates a guest's RSVP status manually
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { id, status } = body;
+    const { id, status, nome_convite, membros, telefone } = body;
 
-    if (!id || !status) {
-      return NextResponse.json({ error: 'ID e status são obrigatórios.' }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ error: 'ID é obrigatório.' }, { status: 400 });
     }
 
-    let confirmado = false;
-    let data_confirmacao = null;
+    const updateData: any = {};
 
-    if (status === 'confirmado') {
-      confirmado = true;
-      data_confirmacao = new Date().toISOString();
-    } else if (status === 'rejeitado') {
-      confirmado = false;
-      data_confirmacao = new Date().toISOString();
-    } else if (status === 'pendente') {
-      confirmado = false;
-      data_confirmacao = null;
+    if (status) {
+      let confirmado = false;
+      let data_confirmacao = null;
+
+      if (status === 'confirmado') {
+        confirmado = true;
+        data_confirmacao = new Date().toISOString();
+      } else if (status === 'rejeitado') {
+        confirmado = false;
+        data_confirmacao = new Date().toISOString();
+      } else if (status === 'pendente') {
+        confirmado = false;
+        data_confirmacao = null;
+      }
+      updateData.confirmado = confirmado;
+      updateData.data_confirmacao = data_confirmacao;
     }
+
+    if (nome_convite !== undefined) updateData.nome_convite = nome_convite;
+    if (membros !== undefined) updateData.membros = membros;
+    if (telefone !== undefined) updateData.telefone = telefone;
 
     const { data, error } = await supabase
       .from('convidados')
-      .update({
-        confirmado: confirmado,
-        data_confirmacao: data_confirmacao,
-      })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();
@@ -69,7 +74,6 @@ export async function PATCH(request: Request) {
   }
 }
 
-// POST: Adds a new guest, requiring the passcode '1111'
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -103,7 +107,6 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE: Removes a guest, requiring the passcode '1111'
 export async function DELETE(request: Request) {
   try {
     const body = await request.json();

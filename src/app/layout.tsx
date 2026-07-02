@@ -5,21 +5,21 @@ import './globals.css';
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-serif',
+  variable: '--font-cormorant',
   display: 'swap',
 });
 
 const greatVibes = Great_Vibes({
   subsets: ['latin'],
   weight: ['400'],
-  variable: '--font-script',
+  variable: '--font-great-vibes',
   display: 'swap',
 });
 
 const jost = Jost({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-sans',
+  variable: '--font-jost',
   display: 'swap',
 });
 
