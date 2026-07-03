@@ -29,8 +29,10 @@ export default function Home() {
   const [videoLoaded, setVideoLoaded] = useState(false);
 
   // Copy status
-  const [copiedType, setCopiedType] = useState<'iban' | 'mbway' | null>(null);
+  const [copiedType, setCopiedType] = useState<'iban' | 'mbway' | 'pix' | null>(null);
   const [isGiftsModalOpen, setIsGiftsModalOpen] = useState(false);
+  const [giftsModalGift, setGiftsModalGift] = useState<{ title: string, image: string } | null>(null);
+  const [giftsModalRegion, setGiftsModalRegion] = useState<'EU' | 'BR'>('EU');
 
   // RSVP Form state (basing on casamento Supabase search logic)
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'loading' | 'found' | 'confirming' | 'success' | 'error'>('idle');
@@ -188,8 +190,8 @@ export default function Home() {
     }
   };
 
-  const handleCopy = async (type: 'iban' | 'mbway') => {
-    const value = type === 'mbway' ? WEDDING_CONFIG.mbway : WEDDING_CONFIG.iban;
+  const handleCopy = async (type: 'iban' | 'mbway' | 'pix') => {
+    const value = type === 'mbway' ? WEDDING_CONFIG.mbway : type === 'iban' ? WEDDING_CONFIG.iban : WEDDING_CONFIG.pix;
     try {
       await navigator.clipboard.writeText(value);
       setCopiedType(type);
@@ -758,9 +760,38 @@ export default function Home() {
                 </button>
               </div>
 
+            </div>
+
+            <div className="pay-card reveal-up">
+              <Smartphone className="pay-card__icon" />
+              <h3 className="pay-card__label">PIX (Brasil)</h3>
+              
+              <div className="pay-card__ornament">
+                <span className="ornament-line"></span>
+                <span className="ornament-diamond">♦</span>
+                <span className="ornament-line"></span>
+              </div>
+
+              <div className="pay-card__content flex-1 flex flex-col justify-between">
+                <p className="text-xs text-ink-soft leading-relaxed mb-4">
+                  Apoie a nossa união gerando um QR Code ou copiando a chave de forma rápida e segura.
+                </p>
+                <button
+                  className="pay-card__copy-btn w-full cursor-pointer inline-flex items-center justify-center gap-2"
+                  onClick={() => {
+                    setGiftsModalGift({ title: "Presente Livre (PIX)", image: "/gifts/gift_custom.png" });
+                    setGiftsModalRegion('BR');
+                    setIsGiftsModalOpen(true);
+                  }}
+                  aria-label="Contribuir via PIX"
+                >
+                  <Gift className="h-4 w-4" /> Contribuir via PIX
+                </button>
+              </div>
+
               <p className="pay-card__holder">
                 Titular da Conta
-                <strong>Lucas Alves &amp; Jaqueline S. Silva</strong>
+                <strong>Lucas Alves da Silva</strong>
               </p>
             </div>
           </div>
@@ -961,13 +992,32 @@ export default function Home() {
       </footer>
 
       {isGiftsModalOpen && (
-        <GiftsModal isOpen={isGiftsModalOpen} onClose={() => setIsGiftsModalOpen(false)} />
+        <GiftsModal 
+          isOpen={isGiftsModalOpen} 
+          onClose={() => {
+            setIsGiftsModalOpen(false);
+            setGiftsModalGift(null);
+            setGiftsModalRegion('EU');
+          }} 
+          initialGift={giftsModalGift}
+          initialRegion={giftsModalRegion}
+        />
       )}
     </>
   );
 }
 
-function GiftsModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+function GiftsModal({ 
+  isOpen, 
+  onClose,
+  initialGift = null,
+  initialRegion = 'EU'
+}: { 
+  isOpen: boolean; 
+  onClose: () => void;
+  initialGift?: { title: string, image: string } | null;
+  initialRegion?: 'EU' | 'BR';
+}) {
   const [copied, setCopied] = useState<string | null>(null);
   const [selectedGift, setSelectedGift] = useState<{ title: string, image: string } | null>(null);
 
@@ -982,6 +1032,11 @@ function GiftsModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      if (initialGift) {
+        setSelectedGift(initialGift);
+        setStep('value');
+        setRegion(initialRegion);
+      }
     } else {
       document.body.style.overflow = 'unset';
       const t = setTimeout(() => {
@@ -995,7 +1050,7 @@ function GiftsModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
       return () => clearTimeout(t);
     }
     return () => { document.body.style.overflow = 'unset'; };
-  }, [isOpen]);
+  }, [isOpen, initialGift, initialRegion]);
 
   if (!isOpen) return null;
 
@@ -1254,6 +1309,26 @@ function GiftsModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
                       <span>Gerar PIX</span>
                     )}
                   </button>
+                )}
+                {region === 'BR' && (
+                  <div className="mt-4 p-4 rounded-2xl bg-white/[0.03] border border-gold/15 backdrop-blur-sm shadow-md">
+                    <p className="text-[10px] text-cream/70 uppercase tracking-widest font-semibold mb-2">
+                      Ou transfira para a chave PIX direta (CPF)
+                    </p>
+                    <div className="flex items-center justify-between bg-white/[0.04] px-4 py-2.5 rounded-xl border border-gold/5">
+                      <span className="text-xs md:text-sm font-semibold text-ivory font-mono">{WEDDING_CONFIG.pix}</span>
+                      <button
+                        onClick={() => handleCopy(WEDDING_CONFIG.pix, 'pix')}
+                        className="p-2 rounded-full bg-gold/10 hover:bg-gold/25 text-gold transition-all cursor-pointer"
+                        title="Copiar Chave PIX"
+                      >
+                        {copied === 'pix' ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-cream/40 mt-2 leading-relaxed">
+                      Titular: Lucas Alves da Silva
+                    </p>
+                  </div>
                 )}
               </div>
             </div>

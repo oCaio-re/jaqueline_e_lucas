@@ -4,6 +4,7 @@ export const WEDDING_CONFIG = {
   eventLocation: 'Quinta de Marzovelos, R. Qta de Baixo n.º 2 B, 3510-014 Viseu',
   iban: 'PT50 3560 0001 9109 9742 5707 5',
   mbway: '931 322 541',
+  pix: '10177277670',
   youtubeVideoId: 'dwF2Nyhmpdg',
   bgMusicPath: '/so-voce-anderson-freire.mp3',
   heroBgPath: '/img-hero.jpg',
