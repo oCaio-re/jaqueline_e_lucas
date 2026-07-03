@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Volume2, Copy, Check, Calendar, MapPin, Menu, X, ChevronDown, Gift, ArrowLeft, Landmark, Smartphone } from 'lucide-react';
+import { Play, Pause, Volume2, Copy, Check, Calendar, MapPin, Menu, X, ChevronDown, Gift, ArrowLeft, Landmark, Smartphone, Heart, Church, Sparkles, Music } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { WEDDING_CONFIG } from '@/config/wedding';
+import Lenis from 'lenis';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -42,6 +43,26 @@ export default function Home() {
   const [guestInvite, setGuestInvite] = useState('');
   const [guestMembers, setGuestMembers] = useState('');
   const [guestMessage, setGuestMessage] = useState('');
+
+  // Smooth scrollbar with Lenis
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    });
+
+    let rafId: number;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    };
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   // 1. Mount effect & scroll triggers
   useEffect(() => {
@@ -485,7 +506,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <p className="story__closing reveal-up">A nossa relação tem Deus como alicerce. A nossa família é para a honra e glória do Senhor. 🤍</p>
+          <p className="story__closing reveal-up">A nossa relação tem Deus como alicerce, e a nossa família nasce para honrar e glorificar o Senhor.</p>
         </div>
       </section>
 
@@ -493,15 +514,17 @@ export default function Home() {
       <section className="song" id="musica">
         <div className="song__overlay"></div>
         <div className="section-frame">
-          <p className="overline reveal-up">O sinal do Céu</p>
+          <p className="overline reveal-up">Uma Confirmação Especial</p>
           <h2 className="script-title reveal-up">A Nossa Música</h2>
           <div className="song__card reveal-up">
-            <div className="song__note">♪</div>
+            <div className="song__note flex justify-center text-gold mb-3">
+              <Music className="h-6 w-6" strokeWidth={1.5} />
+            </div>
             <h3 className="song__title">Só Você</h3>
             <p className="song__artist">Anderson Freire</p>
             <p className="song__story">Íamos a caminho do Parque da Cidade com amigos, ouvindo músicas no aleatório, quando tocou <em>&ldquo;Só Você&rdquo;</em>. Naquele instante, o Espírito Santo trouxe-me à memória uma cena dos meus 16 anos.</p>
             <p className="song__story">Uma amiga apresentou-me essa canção e contou que sonhava casar-se ao som dela. Na época, o rapaz com quem ela namorava chamava-se <strong>Lucas Alves</strong>. Encantada pela música, eu disse que também gostaria de me casar ao som dela um dia.</p>
-            <p className="song__story">Anos depois, ao ouvir novamente essa canção, percebi um detalhe que me deixou sem palavras: <strong>Lucas Alves</strong> também é o nome do meu noivo. Naquele momento, Deus trouxe aquela lembrança ao meu coração e confirmou algo que eu já vinha sentindo em oração: era ele. 🤍</p>
+            <p className="song__story">Anos depois, ao ouvir novamente essa canção, percebi um detalhe que me deixou sem palavras: <strong>Lucas Alves</strong> também é o nome do meu noivo. Naquele momento, Deus trouxe aquela lembrança ao meu coração e confirmou algo que eu já vinha sentindo em oração: era ele.</p>
             <button
               className={`song__play ${isPlaying ? 'is-playing' : ''}`}
               onClick={toggleMusic}
@@ -559,7 +582,9 @@ export default function Home() {
           <h2 className="script-title reveal-up">O Grande Dia</h2>
           <div className="event__cards">
             <article className="event-card reveal-up">
-              <div className="event-card__icon">💒</div>
+              <div className="event-card__icon flex justify-center text-gold-deep mb-4">
+                <Church className="h-8 w-8" strokeWidth={1.5} />
+              </div>
               <h3>Cerimónia</h3>
               <p className="event-card__time">12h00</p>
               <p className="event-card__place">Quinta de Marzovelos</p>
@@ -572,7 +597,9 @@ export default function Home() {
               <span className="event__yr">2026</span>
             </div>
             <article className="event-card reveal-up">
-              <div className="event-card__icon">🥂</div>
+              <div className="event-card__icon flex justify-center text-gold-deep mb-4">
+                <Sparkles className="h-8 w-8" strokeWidth={1.5} />
+              </div>
               <h3>Celebração</h3>
               <p className="event-card__time">13h30</p>
               <p className="event-card__place">Quinta de Marzovelos</p>
@@ -664,7 +691,7 @@ export default function Home() {
           <p className="overline reveal-up">Com todo o carinho</p>
           <h2 className="script-title reveal-up">Presentes</h2>
           <p className="gifts__intro reveal-up">
-            A sua presença é, sem dúvida, o nosso maior presente. 🤍 Mas, se o seu coração desejar abençoar e ofertar nas nossas vidas, fá-lo-á com toda a liberdade — e com a nossa mais sincera gratidão.
+            A sua presença é o nosso maior presente. No entanto, se desejar abençoar a nossa nova caminhada com uma oferta, partilhamos abaixo os nossos dados com profunda gratidão.
           </p>
           <div className="flex flex-col md:flex-row gap-8 justify-center items-center w-full max-w-4xl mx-auto mt-8">
             <div className="pay-card reveal-up">
@@ -886,16 +913,18 @@ export default function Home() {
       {/* 14. FAQ SECTION WITH SHADCN ACCORDION */}
       <section className="faq">
         <div className="section-frame">
-          <p className="overline reveal-up">Boa pergunta</p>
-          <h2 className="script-title reveal-up">Perguntas Frequentes</h2>
-
+          <p className="overline reveal-up">Informações Úteis</p>
+          <h2 className="script-title reveal-up">Dúvidas Frequentes</h2>
+ 
           <div className="dresscode reveal-up">
-            <div className="dresscode__icon">👗 🤵</div>
+            <div className="dresscode__icon flex justify-center text-gold-deep">
+              <Sparkles className="h-8 w-8" strokeWidth={1.5} />
+            </div>
             <div className="dresscode__body">
               <p className="dresscode__label">Dress Code</p>
               <h3 className="dresscode__title">Traje Formal · Cerimónia</h3>
               <p className="dresscode__text">
-                Senhoras: vestido de cocktail ou comprido. Senhores: fato. Pedimos, com carinho, que reservem o <strong>branco</strong> para a noiva. 🤍
+                Senhoras: vestido de cocktail ou comprido. Senhores: fato. Pedimos, com carinho, que reservem a cor <strong>branca</strong> exclusivamente para a noiva.
               </p>
             </div>
           </div>
