@@ -389,7 +389,9 @@ export default function AdminPage() {
       <header className="w-full bg-navy-dark fixed inset-x-0 top-0 z-40 transition-all shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-script text-white font-light tracking-wide">J&amp;L Confirmações</h1>
+            <Link href="/">
+              <h1 className="text-3xl font-script text-white hover:text-gold transition-colors font-light tracking-wide cursor-pointer">J&amp;L Confirmações</h1>
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             <button 
@@ -409,6 +411,13 @@ export default function AdminPage() {
               <Download className="w-3.5 h-3.5" />
               Exportar CSV
             </button>
+            <Link 
+              href="/"
+              className="flex items-center gap-1.5 px-4.5 py-2 border border-white/20 hover:border-white text-white hover:bg-white/10 rounded-full text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer active:scale-95"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Ver Site
+            </Link>
             <button 
               onClick={handleLogout}
               className="px-5 py-2 border border-white/30 hover:border-white text-white hover:bg-white/10 rounded-full text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer active:scale-95"

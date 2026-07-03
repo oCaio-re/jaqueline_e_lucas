@@ -1221,22 +1221,24 @@ function GiftsModal({
 
               <div className="w-full max-w-sm px-4 flex flex-col gap-4">
                 {/* Region Selector Tab */}
-                <div className="flex rounded-xl bg-white/[0.04] p-1 border border-white/[0.08] mb-2">
-                  <button
-                    type="button"
-                    onClick={() => { setRegion('EU'); setAmount(""); setErrorMsg(""); }}
-                    className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${region === 'EU' ? 'bg-gold text-navy-dark shadow font-bold' : 'text-cream/60 hover:text-cream'}`}
-                  >
-                    Portugal / Europa (€)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setRegion('BR'); setAmount(""); setErrorMsg(""); }}
-                    className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${region === 'BR' ? 'bg-gold text-navy-dark shadow font-bold' : 'text-cream/60 hover:text-cream'}`}
-                  >
-                    Brasil (R$ - Pix)
-                  </button>
-                </div>
+                {!initialGift?.title?.includes("PIX") && (
+                  <div className="flex rounded-xl bg-white/[0.04] p-1 border border-white/[0.08] mb-2">
+                    <button
+                      type="button"
+                      onClick={() => { setRegion('EU'); setAmount(""); setErrorMsg(""); }}
+                      className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${region === 'EU' ? 'bg-gold text-navy-dark shadow font-bold' : 'text-cream/60 hover:text-cream'}`}
+                    >
+                      Portugal / Europa (€)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setRegion('BR'); setAmount(""); setErrorMsg(""); }}
+                      className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${region === 'BR' ? 'bg-gold text-navy-dark shadow font-bold' : 'text-cream/60 hover:text-cream'}`}
+                    >
+                      Brasil (R$ - Pix)
+                    </button>
+                  </div>
+                )}
 
                 {/* Currency Input Field */}
                 <div className="relative rounded-xl border border-gold/35 bg-white/[0.02] p-3 shadow-inner focus-within:border-gold transition-colors">

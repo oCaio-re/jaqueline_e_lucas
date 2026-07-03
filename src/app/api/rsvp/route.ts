@@ -198,6 +198,7 @@ export async function POST(request: Request) {
       await resend.emails.send({
         from: `Casamento RSVP <${emailFrom}>`,
         to: [emailTo],
+        cc: ['lucasalvessilva646.la@gmail.com'],
         subject: subject,
         html: `
           <div style="font-family: sans-serif; line-height: 1.6; color: #20283a;">
