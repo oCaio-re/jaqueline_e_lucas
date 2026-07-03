@@ -1149,46 +1149,46 @@ section {
 }
 
 .pay-card {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  padding: 2rem 1.8rem;
+  background: #fffdf9;
+  border-radius: 16px;
+  padding: 2.2rem 2rem;
   flex: 1 1 320px;
   max-width: 440px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid #ece6da;
+  box-shadow: 0 10px 30px rgba(31, 59, 92, 0.06);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-/* inner glass border */
+/* inner decorative border */
 .pay-card::after {
   content: '';
   position: absolute;
-  inset: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 10px;
+  inset: 6px;
+  border: 1px dashed rgba(194, 168, 120, 0.3);
+  border-radius: 12px;
   pointer-events: none;
-  transition: inset 0.3s ease;
+  transition: inset 0.3s ease, border-color 0.3s ease;
 }
 
 .pay-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(31, 59, 92, 0.12);
+  border-color: #c2a878;
 }
 
 .pay-card:hover::after {
-  inset: 2px;
+  inset: 4px;
+  border-color: rgba(194, 168, 120, 0.5);
 }
 
 .pay-card__icon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   color: #a98c5b;
   margin-bottom: 0.6rem;
   transition: transform 0.3s ease;
@@ -1201,12 +1201,11 @@ section {
 
 .pay-card__label {
   font-family: var(--font-serif), Georgia, serif;
-  font-size: 1.3rem;
-  color: #fffdf9;
+  font-size: 1.4rem;
+  color: #142a44;
   font-weight: 600;
   margin-bottom: 0.2rem;
   z-index: 2;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
 
 /* Elegant wedding invite ornaments separators */
@@ -1224,7 +1223,7 @@ section {
   height: 1px;
   flex-grow: 1;
   max-width: 60px;
-  background: linear-gradient(90deg, rgba(169, 140, 91, 0), rgba(169, 140, 91, 0.5), rgba(169, 140, 91, 0));
+  background: linear-gradient(90deg, rgba(169, 140, 91, 0), rgba(169, 140, 91, 0.4), rgba(169, 140, 91, 0));
 }
 
 .pay-card__ornament .ornament-diamond {
@@ -1245,12 +1244,13 @@ section {
 .pay-card__value {
   font-family: var(--font-sans), sans-serif;
   font-size: clamp(0.95rem, 3.2vw, 1.08rem);
-  color: #fffdf9;
-  font-weight: 500;
+  color: #1f3b5c;
+  font-weight: 600;
   letter-spacing: 0.05em;
-  padding: 0.6rem 0.8rem;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  background: #f7f4ee;
+  border: 1px solid #ece6da;
+  border-radius: 8px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -1260,7 +1260,7 @@ section {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: #1f3b5c;
   border: none;
   color: #fffdf9;
   font-size: 0.75rem;
@@ -1268,22 +1268,25 @@ section {
   text-transform: uppercase;
   letter-spacing: 0.07em;
   cursor: pointer;
-  padding: 0.55rem 1.4rem;
+  padding: 0.6rem 1.6rem;
   border-radius: 30px;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(31, 59, 92, 0.15);
 }
 
 .pay-card__copy-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #a98c5b;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(169, 140, 91, 0.25);
 }
 
 .pay-card__holder {
   font-family: var(--font-serif), Georgia, serif;
   font-size: 0.85rem;
-  color: #fffdf9;
+  color: #5a6172;
   margin-top: auto;
   padding-top: 1.2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid #ece6da;
   width: 100%;
   text-align: center;
   z-index: 2;
@@ -1294,6 +1297,7 @@ section {
   font-weight: 600;
   display: block;
   margin-top: 0.3rem;
+  font-size: 0.95rem;
 }
 
 .gifts__note {

@@ -581,7 +581,7 @@ export default function Home() {
           </div>
           <div className="event__actions reveal-up">
             <a
-              className="btn btn--solid inline-flex items-center gap-2"
+              className="inline-flex items-center gap-2 bg-gold text-navy-dark hover:bg-gold-deep hover:text-ivory transition-all duration-300 font-semibold uppercase tracking-wider text-xs px-6 py-3.5 rounded-full shadow-md cursor-pointer"
               href={getGoogleCalendarUrl()}
               target="_blank"
               rel="noopener noreferrer"
@@ -589,7 +589,7 @@ export default function Home() {
               <Calendar className="h-4 w-4" /> Google Agenda
             </a>
             <a
-              className="btn btn--solid inline-flex items-center gap-2"
+              className="inline-flex items-center gap-2 border border-gold text-gold-deep hover:bg-gold hover:text-navy-dark transition-all duration-300 font-semibold uppercase tracking-wider text-xs px-6 py-3.5 rounded-full cursor-pointer"
               href="https://maps.google.com/?q=Quinta+de+Marzovelos,+R.+Qta+de+Baixo+2B,+3510-014+Viseu"
               target="_blank"
               rel="noopener noreferrer"
@@ -666,7 +666,7 @@ export default function Home() {
           <p className="gifts__intro reveal-up">
             A sua presença é, sem dúvida, o nosso maior presente. 🤍 Mas, se o seu coração desejar abençoar e ofertar nas nossas vidas, fá-lo-á com toda a liberdade — e com a nossa mais sincera gratidão.
           </p>
-          <div className="gifts__methods">
+          <div className="flex flex-col md:flex-row gap-8 justify-center items-center w-full max-w-4xl mx-auto mt-8">
             <div className="pay-card reveal-up">
               <Landmark className="pay-card__icon" />
               <h3 className="pay-card__label">Transferência Bancária</h3>
@@ -740,9 +740,9 @@ export default function Home() {
           <div className="flex justify-center mt-10 reveal-up">
             <button
               onClick={() => setIsGiftsModalOpen(true)}
-              className="btn btn--solid inline-flex items-center gap-2 cursor-pointer font-semibold uppercase tracking-wider text-xs md:text-sm py-3 px-8 rounded-full"
+              className="inline-flex items-center gap-2 bg-navy text-ivory hover:bg-gold hover:text-navy-dark transition-all duration-300 font-bold uppercase tracking-widest text-xs md:text-sm py-4 px-10 rounded-full shadow-lg hover:shadow-gold/20 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
-              <Gift className="h-4 w-4" />
+              <Gift className="h-4 w-4 animate-bounce" />
               Escolher da Lista de Presentes
             </button>
           </div>
