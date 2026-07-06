@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Volume2, Copy, Check, Calendar, MapPin, Menu, X, ChevronDown, Gift, ArrowLeft, Landmark, Smartphone, Heart, Church, Sparkles, Music } from 'lucide-react';
+import { Copy, Check, Calendar, MapPin, X, Gift, ArrowLeft, Landmark, Smartphone, Church, Sparkles } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { WEDDING_CONFIG } from '@/config/wedding';
 import Lenis from 'lenis';
+import { motion, useScroll, useSpring } from 'motion/react';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [loaderDone, setLoaderDone] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -24,9 +24,6 @@ export default function Home() {
     seconds: '00',
   });
   const [isWeddingDay, setIsWeddingDay] = useState(false);
-
-  // Proposal video state
-  const [videoLoaded, setVideoLoaded] = useState(false);
 
   // Copy status
   const [copiedType, setCopiedType] = useState<'iban' | 'mbway' | 'pix' | null>(null);
@@ -77,7 +74,8 @@ export default function Home() {
 
     // Scroll listener for nav
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 60);
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > 60);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
@@ -199,14 +197,6 @@ export default function Home() {
     } catch (_) { }
   };
 
-  const loadProposalVideo = () => {
-    setVideoLoaded(true);
-    // Pause background music when proposal video starts playing
-    if (audioRef.current && !audioRef.current.paused) {
-      audioRef.current.pause();
-    }
-  };
-
   const celebrateConfetti = () => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const colors = ['#c2a878', '#1f3b5c', '#5e7da6', '#fffdf9', '#a98c5b'];
@@ -325,37 +315,60 @@ export default function Home() {
         </button>
       )}
 
-      {/* 3. Navigation Bar */}
+      {/* Scroll progress bar */}
+      {mounted && (
+        <ScrollProgressBar />
+      )}
+
+      {/* 3. DESKTOP: Horizontal top navbar */}
       <nav className={`nav ${isScrolled ? 'is-scrolled' : ''}`} id="nav">
         <a href="#hero" className="nav__brand">J <span>&amp;</span> L</a>
-        <button
-          className="nav__burger md:hidden"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
-        >
-          {isMenuOpen ? (
-            <X className={`h-6 w-6 ${isScrolled ? 'text-navy-dark' : 'text-ivory'}`} />
-          ) : (
-            <Menu className={`h-6 w-6 ${isScrolled ? 'text-navy-dark' : 'text-ivory'}`} />
-          )}
-        </button>
-        <ul className={`nav__links ${isMenuOpen ? 'is-open' : ''}`} id="navLinks">
-          <li><a href="#historia" onClick={() => setIsMenuOpen(false)}>A Nossa História</a></li>
-          <li><a href="#musica" onClick={() => setIsMenuOpen(false)}>A Nossa Música</a></li>
-          <li><a href="#pedido" onClick={() => setIsMenuOpen(false)}>O Pedido</a></li>
-          <li><a href="#evento" onClick={() => setIsMenuOpen(false)}>O Grande Dia</a></li>
-          <li><a href="#programa" onClick={() => setIsMenuOpen(false)}>Cronograma</a></li>
-          <li><a href="#presentes" onClick={() => setIsMenuOpen(false)}>Presentes</a></li>
+        <ul className="nav__links">
+          <li><a href="#evento">O Grande Dia</a></li>
+          <li><a href="#programa">Cronograma</a></li>
+          <li><a href="#presentes">Presentes</a></li>
           <li>
-            <a
-              href="#rsvp"
-              className="nav__cta"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Confirmar Presença
-            </a>
+            <a href="#rsvp" className="nav__cta">Confirmar Presença</a>
           </li>
         </ul>
+      </nav>
+
+      {/* 3b. MOBILE: Brand mark fixed top-left */}
+      <a
+        href="#hero"
+        className={`nav__brand-mark ${isScrolled ? 'is-scrolled' : ''}`}
+        aria-label="Ir para o início"
+      >
+        J <span>&amp;</span> L
+      </a>
+
+      {/* 3c. MOBILE: Side pill nav fixed right */}
+      <nav className="side-nav" aria-label="Navegação principal">
+        <div className="side-nav__item">
+          <a href="#evento" className="side-nav__btn" aria-label="O Grande Dia">
+            <Church className="h-4 w-4" strokeWidth={1.5} />
+          </a>
+          <span className="side-nav__tooltip">O Grande Dia</span>
+        </div>
+        <div className="side-nav__item">
+          <a href="#programa" className="side-nav__btn" aria-label="Cronograma">
+            <Calendar className="h-4 w-4" strokeWidth={1.5} />
+          </a>
+          <span className="side-nav__tooltip">Cronograma</span>
+        </div>
+        <div className="side-nav__item">
+          <a href="#presentes" className="side-nav__btn" aria-label="Presentes">
+            <Gift className="h-4 w-4" strokeWidth={1.5} />
+          </a>
+          <span className="side-nav__tooltip">Presentes</span>
+        </div>
+        <div className="side-nav__divider" aria-hidden="true"></div>
+        <div className="side-nav__item">
+          <a href="#rsvp" className="side-nav__btn side-nav__btn--cta" aria-label="Confirmar Presença">
+            <Check className="h-4 w-4" strokeWidth={2} />
+          </a>
+          <span className="side-nav__tooltip">Confirmar Presença</span>
+        </div>
       </nav>
 
       {/* 4. HERO SECTION */}
@@ -445,137 +458,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 7. OUR STORY TIMELINE SECTION */}
-      <section className="story" id="historia">
-        <div className="section-frame">
-          <p className="overline reveal-up">Um encontro guiado por Deus</p>
-          <h2 className="script-title reveal-up">A Nossa História</h2>
-          <div className="timeline">
-            <div className="timeline__item reveal-up">
-              <div className="timeline__dot"></div>
-              <div className="timeline__year">Out 2025</div>
-              <div className="timeline__card">
-                <h3>Onde tudo começou</h3>
-                <p>Conhecemo-nos no GC Imersos. O Senhor conduziu o Lucas a orar pelo GC e, logo depois, mostrou-lhe que era para orar por mim. Ele começou a aproximar-se e nasceu uma amizade.</p>
-              </div>
-            </div>
-            <div className="timeline__item reveal-up">
-              <div className="timeline__dot"></div>
-              <div className="timeline__year">O tempo de espera</div>
-              <div className="timeline__card">
-                <h3>Dois meses em oração</h3>
-                <p>As muitas perguntas levaram-me a afastar e ficámos dois meses sem conversar — mas em oração constante. Desde 2022 que o Lucas orava pela sua esposa. Nesse silêncio, Deus preparava o meu coração.</p>
-              </div>
-            </div>
-            <div className="timeline__item reveal-up">
-              <div className="timeline__dot"></div>
-              <div className="timeline__year">08 Mar 2026</div>
-              <div className="timeline__card">
-                <h3>A ligação que mudou tudo</h3>
-                <p>O Senhor tocou o coração do Lucas para me ligar. Algo em mim tinha mudado — Deus mostrava-me que eu já estava pronta. Desde esse dia, nunca mais nos afastámos.</p>
-              </div>
-            </div>
-            <div className="timeline__item reveal-up">
-              <div className="timeline__dot"></div>
-              <div className="timeline__year">18 Mar 2026</div>
-              <div className="timeline__card">
-                <h3>Juntos em oração</h3>
-                <p>O Lucas chamou-me para orar. Ele já tinha a certeza, mas queria que o Senhor ma mostrasse também. A partir daí, passámos a orar e a conversar todos os dias.</p>
-              </div>
-            </div>
-            <div className="timeline__item reveal-up">
-              <div className="timeline__dot"></div>
-              <div className="timeline__year">08 Abr 2026</div>
-              <div className="timeline__card">
-                <h3>O pedido de namoro</h3>
-                <p>Conhecendo o meu sonho de ser pedida em namoro, o Lucas tornou esse desejo realidade. Foi o início de uma promessa que sabíamos vir do Céu.</p>
-              </div>
-            </div>
-            <div className="timeline__item reveal-up">
-              <div className="timeline__dot"></div>
-              <div className="timeline__year">28 Mai 2026</div>
-              <div className="timeline__card">
-                <h3>O pedido de casamento</h3>
-                <p>Da maneira mais linda que jamais imaginaria, o Lucas pediu-me em casamento. A cada dia tenho mais clareza: é ele, sempre foi ele.</p>
-              </div>
-            </div>
-            <div className="timeline__item reveal-up">
-              <div className="timeline__dot"></div>
-              <div className="timeline__year">26 Set 2026</div>
-              <div className="timeline__card timeline__card--highlight">
-                <h3 style={{ color: '#a98c5b' }}>Para sempre</h3>
-                <p>Chegou o momento de dizermos &ldquo;sim&rdquo; diante de Deus e de quem mais amamos. É o cumprimento de uma promessa.</p>
-              </div>
-            </div>
-          </div>
-          <p className="story__closing reveal-up">A nossa relação tem Deus como alicerce, e a nossa família nasce para honrar e glorificar o Senhor.</p>
-        </div>
-      </section>
 
-      {/* 8. OUR SONG SECTION */}
-      <section className="song" id="musica">
-        <div className="song__overlay"></div>
-        <div className="section-frame">
-          <p className="overline reveal-up">Uma Confirmação Especial</p>
-          <h2 className="script-title reveal-up">A Nossa Música</h2>
-          <div className="song__card reveal-up">
-            <div className="song__note flex justify-center text-gold mb-3">
-              <Music className="h-6 w-6" strokeWidth={1.5} />
-            </div>
-            <h3 className="song__title">Só Você</h3>
-            <p className="song__artist">Anderson Freire</p>
-            <p className="song__story">Íamos a caminho do Parque da Cidade com amigos, ouvindo músicas no aleatório, quando tocou <em>&ldquo;Só Você&rdquo;</em>. Naquele instante, o Espírito Santo trouxe-me à memória uma cena dos meus 16 anos.</p>
-            <p className="song__story">Uma amiga apresentou-me essa canção e contou que sonhava casar-se ao som dela. Na época, o rapaz com quem ela namorava chamava-se <strong>Lucas Alves</strong>. Encantada pela música, eu disse que também gostaria de me casar ao som dela um dia.</p>
-            <p className="song__story">Anos depois, ao ouvir novamente essa canção, percebi um detalhe que me deixou sem palavras: <strong>Lucas Alves</strong> também é o nome do meu noivo. Naquele momento, Deus trouxe aquela lembrança ao meu coração e confirmou algo que eu já vinha sentindo em oração: era ele.</p>
-            <button
-              className={`song__play ${isPlaying ? 'is-playing' : ''}`}
-              onClick={toggleMusic}
-              aria-label={isPlaying ? "Pausar música" : "Tocar música"}
-            >
-              {isPlaying ? (
-                <Pause className="h-4 w-4 fill-ink" />
-              ) : (
-                <Play className="h-4 w-4 fill-ink" />
-              )}
-              <span className="song__play-text">
-                {isPlaying ? 'A tocar a nossa música' : 'Tocar a nossa música'}
-              </span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* 9. PROPOSAL VIDEO */}
-      <section className="proposal" id="pedido">
-        <div className="section-frame">
-          <p className="overline reveal-up">28 de Maio de 2026</p>
-          <h2 className="script-title reveal-up">O Pedido</h2>
-          <p className="proposal__intro reveal-up">
-            Da maneira mais linda que jamais imaginaríamos, o Lucas contou a nossa história numa animação e pediu-me em casamento. Reviva connosco este momento. 💍
-          </p>
-          <div className="proposal__frame reveal-up">
-            <div className="proposal__video">
-              {!videoLoaded ? (
-                <button
-                  className="proposal__facade"
-                  onClick={loadProposalVideo}
-                  style={{ backgroundImage: `url(${WEDDING_CONFIG.videoCapaPath})` }}
-                  aria-label="Reproduzir o vídeo do pedido"
-                >
-                  <span className="proposal__play"></span>
-                </button>
-              ) : (
-                <iframe
-                  src={`https://www.youtube.com/embed/${WEDDING_CONFIG.youtubeVideoId}?rel=0&modestbranding=1&playsinline=1&autoplay=1`}
-                  title="O pedido de casamento"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* 10. THE BIG DAY (Quinta details) */}
       <section className="event" id="evento">
@@ -699,7 +582,7 @@ export default function Home() {
             <div className="pay-card reveal-up">
               <Landmark className="pay-card__icon" />
               <h3 className="pay-card__label">Transferência Bancária</h3>
-              
+
               <div className="pay-card__ornament">
                 <span className="ornament-line"></span>
                 <span className="ornament-diamond">♦</span>
@@ -734,7 +617,7 @@ export default function Home() {
             <div className="pay-card reveal-up">
               <Smartphone className="pay-card__icon" />
               <h3 className="pay-card__label">MB WAY</h3>
-              
+
               <div className="pay-card__ornament">
                 <span className="ornament-line"></span>
                 <span className="ornament-diamond">♦</span>
@@ -765,7 +648,7 @@ export default function Home() {
             <div className="pay-card reveal-up">
               <Smartphone className="pay-card__icon" />
               <h3 className="pay-card__label">PIX (Brasil)</h3>
-              
+
               <div className="pay-card__ornament">
                 <span className="ornament-line"></span>
                 <span className="ornament-diamond">♦</span>
@@ -946,7 +829,7 @@ export default function Home() {
         <div className="section-frame">
           <p className="overline reveal-up">Informações Úteis</p>
           <h2 className="script-title reveal-up">Dúvidas Frequentes</h2>
- 
+
           <div className="dresscode reveal-up">
             <div className="dresscode__icon flex justify-center text-gold-deep">
               <Sparkles className="h-8 w-8" strokeWidth={1.5} />
@@ -992,13 +875,13 @@ export default function Home() {
       </footer>
 
       {isGiftsModalOpen && (
-        <GiftsModal 
-          isOpen={isGiftsModalOpen} 
+        <GiftsModal
+          isOpen={isGiftsModalOpen}
           onClose={() => {
             setIsGiftsModalOpen(false);
             setGiftsModalGift(null);
             setGiftsModalRegion('EU');
-          }} 
+          }}
           initialGift={giftsModalGift}
           initialRegion={giftsModalRegion}
         />
@@ -1007,13 +890,13 @@ export default function Home() {
   );
 }
 
-function GiftsModal({ 
-  isOpen, 
+function GiftsModal({
+  isOpen,
   onClose,
   initialGift = null,
   initialRegion = 'EU'
-}: { 
-  isOpen: boolean; 
+}: {
+  isOpen: boolean;
   onClose: () => void;
   initialGift?: { title: string, image: string } | null;
   initialRegion?: 'EU' | 'BR';
@@ -1459,6 +1342,24 @@ function GiftsModal({
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function ScrollProgressBar() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  return (
+    <div className="scroll-progress-bar" aria-hidden="true">
+      <motion.div
+        className="scroll-progress-bar__fill"
+        style={{ scaleX }}
+      />
     </div>
   );
 }
