@@ -7,7 +7,7 @@ export const WEDDING_CONFIG = {
   pix: '10177277670',
   youtubeVideoId: 'dwF2Nyhmpdg',
   bgMusicPath: '/so-voce-anderson-freire.mp3',
-  heroBgPath: '/img-hero.jpg',
+  heroBgPath: '/foto_casal_sfundo.png',
   videoCapaPath: '/video-capa.jpg',
   
   // Google Calendar scheduling (11:00 to 18:00, WEST / UTC+1)

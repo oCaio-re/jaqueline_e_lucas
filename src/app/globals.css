@@ -601,7 +601,7 @@ section {
   /* Dark navy fallback background color to prevent light gaps on fixed backgrounds */
   background-image:
     linear-gradient(180deg, rgba(20, 30, 50, 0.32), rgba(31, 59, 92, 0.55)),
-    url('/img-hero.jpg');
+    url('/foto_casal_sfundo.png');
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
