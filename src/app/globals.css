@@ -2132,3 +2132,104 @@ section {
     height: 16px;
   }
 }
+
+/* ===================== GIFT PRODUCT CARDS ===================== */
+.gifts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.gift-product-card {
+  background: #ffffff;
+  border: 1px solid #e2d9c8;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 360px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s, border-color 0.4s;
+  cursor: pointer;
+}
+
+.gift-product-card:hover {
+  transform: translateY(-5px);
+  border-color: #c2a878;
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.35);
+}
+
+.gift-product-card__img-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  position: relative;
+  background: #f7f4ee;
+  border-bottom: 1px solid #e2d9c8;
+}
+
+.gift-product-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gift-product-card:hover .gift-product-card__img {
+  transform: scale(1.05);
+}
+
+.gift-product-card__body {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.gift-product-card__title {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 0.95rem;
+  color: #142a44;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 0.8rem;
+  min-height: 2.7rem;
+  text-align: left;
+}
+
+.gift-product-card__footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.gift-product-card__price {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #a98c5b;
+}
+
+.gift-product-card__btn {
+  background: #142a44;
+  color: #fffdf9;
+  border: none;
+  padding: 0.5rem 1.1rem;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.gift-product-card:hover .gift-product-card__btn {
+  background: #c2a878;
+  color: #142a44;
+}

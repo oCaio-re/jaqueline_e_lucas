@@ -43,3 +43,6 @@ To mirror the sibling project, admin modifications (adding a new guest or deleti
 
 ### 5. Phone Matching (Portugal)
 Phone matching cleans all non-digits, strips the Portuguese country code (`351`) if present, and compares the remaining 9-digit national number. This permits flexible guest inputs (e.g., matching `+351 912345678` with `912345678`).
+
+### 6. Currencies and Regions (Gift List)
+The symbolic gift list supports dual currencies: Euros (€) and Reais (R$). Guests can switch between currencies via a segmented tab control at the top of the list, which immediately changes the displayed prices to pre-defined, rounded values for each currency. The selected currency is automatically synchronized as the default payment region (Europe for € or Brazil for R$) when proceeding to the contribution checkout step.
