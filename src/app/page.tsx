@@ -11,6 +11,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [loaderDone, setLoaderDone] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [petals, setPetals] = useState<Array<{ left: string; size: number; duration: string; delay: string; opacity: number }>>([]);
 
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -66,6 +67,15 @@ export default function Home() {
   // 1. Mount effect & scroll triggers
   useEffect(() => {
     setMounted(true);
+
+    const generated = Array.from({ length: 24 }).map(() => ({
+      left: `${Math.random() * 100}%`,
+      size: 6 + Math.random() * 12,
+      duration: `${12 + Math.random() * 12}s`,
+      delay: `${Math.random() * 12}s`,
+      opacity: 0.2 + Math.random() * 0.4,
+    }));
+    setPetals(generated);
 
     // Hide loader after 1.6s
     const loaderTimer = setTimeout(() => {
@@ -372,45 +382,56 @@ export default function Home() {
       </nav>
 
       {/* 4. HERO SECTION */}
-      <header className="hero flex flex-col items-center justify-center min-h-screen text-center" id="hero">
+      <header className="hero" id="hero">
         <div className="hero__overlay"></div>
         {/* Falling Petals container */}
         {mounted && (
           <div className="hero__petals" aria-hidden="true">
-            {Array.from({ length: 18 }).map((_, i) => {
-              const size = 8 + Math.random() * 12;
+            {petals.map((petal, i) => {
               const style = {
-                left: `${Math.random() * 100}%`,
-                width: `${size}px`,
-                height: `${size}px`,
-                animationDuration: `${7 + Math.random() * 9}s`,
-                animationDelay: `${Math.random() * 10}s`,
-                opacity: 0.3 + Math.random() * 0.4,
+                left: petal.left,
+                width: `${petal.size}px`,
+                height: `${petal.size}px`,
+                animationDuration: petal.duration,
+                animationDelay: petal.delay,
+                opacity: petal.opacity,
               };
               return <span key={i} className="petal" style={style} />;
             })}
           </div>
         )}
         <div className="hero__content">
-          <p className="hero__pretitle reveal">Vamos casar</p>
-          <h1 className="hero__names">
-            <span className="reveal" style={{ '--d': '.1s' } as React.CSSProperties}>Jaqueline</span>
-            <span className="hero__amp reveal" style={{ '--d': '.3s' } as React.CSSProperties}>&amp;</span>
-            <span className="reveal" style={{ '--d': '.5s' } as React.CSSProperties}>Lucas</span>
-          </h1>
-          <div className="hero__divider reveal" style={{ '--d': '.7s' } as React.CSSProperties}>
-            <span></span>✦<span></span>
+          <div className="hero__text-wrap">
+            <p className="hero__pretitle reveal">Vamos casar</p>
+            <h1 className="hero__names">
+              <span className="reveal" style={{ '--d': '.1s' } as React.CSSProperties}>Jaqueline</span>
+              <span className="hero__amp reveal" style={{ '--d': '.3s' } as React.CSSProperties}>&amp;</span>
+              <span className="reveal" style={{ '--d': '.5s' } as React.CSSProperties}>Lucas</span>
+            </h1>
+            <div className="hero__divider reveal" style={{ '--d': '.7s' } as React.CSSProperties}>
+              <span></span>✦<span></span>
+            </div>
+            <p className="hero__date reveal" style={{ '--d': '.9s' } as React.CSSProperties}>
+              26 de Setembro de 2026 · Viseu, Portugal
+            </p>
+            <a
+              href="#rsvp"
+              className="btn btn--solid reveal"
+              style={{ '--d': '1.1s' } as React.CSSProperties}
+            >
+              Confirme a sua presença
+            </a>
           </div>
-          <p className="hero__date reveal" style={{ '--d': '.9s' } as React.CSSProperties}>
-            26 de Setembro de 2026 · Viseu, Portugal
-          </p>
-          <a
-            href="#rsvp"
-            className="btn btn--ghost reveal"
-            style={{ '--d': '1.1s' } as React.CSSProperties}
+          <div
+            className="hero__couple-img-container reveal"
+            style={{ '--d': '1.3s' } as React.CSSProperties}
           >
-            Confirme a sua presença
-          </a>
+            <img
+              src="/foto_casal_sfundo.png"
+              alt="Jaqueline e Lucas"
+              className="hero__couple-img"
+            />
+          </div>
         </div>
         <a href="#contagem" className="hero__scroll" aria-label="Descer">
           <span></span>
