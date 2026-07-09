@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Great_Vibes, Jost } from 'next/font/google';
+import { Cormorant_Garamond, Great_Vibes, Jost, Inter } from 'next/font/google';
 import './globals.css';
 
 const cormorant = Cormorant_Garamond({
@@ -20,6 +20,13 @@ const jost = Jost({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-jost',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-inter',
   display: 'swap',
 });
 
@@ -44,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt"
-      className={`${cormorant.variable} ${greatVibes.variable} ${jost.variable} scroll-smooth`}
+      className={`${cormorant.variable} ${greatVibes.variable} ${jost.variable} ${inter.variable} scroll-smooth`}
     >
       <body className="font-sans antialiased text-ink bg-cream min-h-screen">
         {children}

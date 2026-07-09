@@ -51,6 +51,7 @@
   /* Wedding custom typography fonts */
   --font-serif: var(--font-cormorant), Georgia, serif;
   --font-script: var(--font-great-vibes), cursive;
+  --font-inter: var(--font-inter), sans-serif;
 
   /* Wedding custom color tokens */
   --color-navy: #1f3b5c;
@@ -394,14 +395,14 @@ section {
   letter-spacing: .14em;
   text-transform: uppercase;
   text-decoration: none;
-  color: #fffdf9;
+  color: var(--color-navy-dark);
   position: relative;
   transition: color .3s;
   padding-bottom: 4px;
 }
 
 .nav.is-scrolled .nav__links a {
-  color: #20283a;
+  color: var(--color-navy-dark);
 }
 
 .nav__links a:not(.nav__cta)::after {
@@ -708,47 +709,53 @@ section {
 }
 
 .hero__couple-img-container {
-  /* take ALL remaining vertical space after the text content */
-  flex: 1;
-  min-height: 0;
-  width: 100%;
-  max-width: 100%;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48vh; /* Altura no mobile para caber sob o texto */
+  width: 100vw;
+  z-index: 1;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  position: relative;
-  z-index: 5;
+  pointer-events: none;
+  animation: heroPhotoFadeIn 1s cubic-bezier(.22, 1, .36, 1) forwards;
+  animation-delay: 1.3s;
+  opacity: 0;
 }
 
-.hero__couple-img-container::after {
-  content: '';
-  position: absolute;
-  left: -25%;
-  right: -25%;
-  bottom: -1px;
-  height: 120px;
-  background: linear-gradient(to top, var(--color-cream) 0%, rgba(247, 244, 238, 0) 100%);
-  pointer-events: none;
-  z-index: 10;
+@keyframes heroPhotoFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .hero__couple-img {
-  /* fill the container maintaining aspect ratio, anchored to the bottom */
-  width: 100%;
+  width: auto;
   height: 100%;
+  max-height: 100%;
+  max-width: 100%;
   object-fit: contain;
   object-position: bottom center;
   display: block;
 }
 
+/* Garante que todas as seções e footer após a hero passem por cima da foto fixa ao rolar a página */
+.hero ~ section,
+.hero ~ footer {
+  position: relative;
+  z-index: 10;
+}
+
 /* ── Desktop: put photo on the left as a background, limit to 52vw, fade out ── */
 @media (min-width: 1024px) {
   .hero__couple-img-container {
-    position: absolute;
-    left: -1.5rem;
+    position: fixed;
+    left: 0;
+    right: auto;
     bottom: 0;
-    top: -6.5rem;
-    height: calc(100% + 6.5rem);
+    top: 0;
+    height: 100vh;
     width: 52vw;
     max-width: 52vw;
     z-index: 1;
@@ -795,14 +802,6 @@ section {
     display: none;
   }
 
-  .hero__couple-img {
-    width: 125%;
-    max-width: 125%;
-    height: auto;
-    max-height: 100%;
-    object-fit: contain;
-    object-position: bottom center;
-  }
 }
 
 .hero__scroll {
@@ -865,8 +864,16 @@ section {
 
 /* ===================== COUNTDOWN SECTION ===================== */
 .countdown {
-  background: #fffdf9;
+  background: var(--color-navy-dark);
   text-align: center;
+}
+
+.countdown .overline {
+  color: var(--color-gold);
+}
+
+.countdown .script-title {
+  color: var(--color-ivory);
 }
 
 .countdown__grid {
@@ -877,12 +884,12 @@ section {
 }
 
 .countdown__cell {
-  background: #f7f4ee;
+  background: var(--color-ivory);
   border-radius: 14px;
   padding: 1.6rem clamp(1rem, 3vw, 2rem);
   min-width: 92px;
-  box-shadow: 0 6px 20px rgba(20, 30, 50, .1);
-  border: 1px solid #ece6da;
+  box-shadow: 0 8px 30px rgba(20, 30, 50, 0.25);
+  border: 1px solid rgba(194, 168, 120, 0.2);
   position: relative;
 }
 
@@ -891,7 +898,7 @@ section {
   font-family: var(--font-serif), Georgia, serif;
   font-weight: 500;
   font-size: clamp(2.2rem, 6vw, 3.4rem);
-  color: #142a44;
+  color: var(--color-navy-dark);
   line-height: 1;
 }
 
@@ -901,7 +908,7 @@ section {
   font-size: .68rem;
   text-transform: uppercase;
   letter-spacing: .24em;
-  color: #a98c5b;
+  color: var(--color-gold-deep);
 }
 
 /* ===================== BIBLE VERSE SECTION ===================== */
@@ -2136,29 +2143,36 @@ section {
 /* ===================== GIFT PRODUCT CARDS ===================== */
 .gifts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
   width: 100%;
 }
 
+@media (min-width: 640px) {
+  .gifts-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 .gift-product-card {
+  font-family: var(--font-inter), sans-serif;
   background: #ffffff;
   border: 1px solid #e2d9c8;
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 360px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  min-height: 230px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s, border-color 0.4s;
   cursor: pointer;
 }
 
 .gift-product-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
   border-color: #c2a878;
-  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
 }
 
 .gift-product-card__img-wrap {
@@ -2182,7 +2196,7 @@ section {
 }
 
 .gift-product-card__body {
-  padding: 1.2rem;
+  padding: 0.8rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -2190,13 +2204,13 @@ section {
 }
 
 .gift-product-card__title {
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: 0.95rem;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.78rem;
   color: #142a44;
   font-weight: 600;
   line-height: 1.4;
-  margin-bottom: 0.8rem;
-  min-height: 2.7rem;
+  margin-bottom: 0.4rem;
+  min-height: 2.2rem;
   text-align: left;
 }
 
@@ -2205,23 +2219,24 @@ section {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .gift-product-card__price {
-  font-family: var(--font-sans), sans-serif;
-  font-size: 1.05rem;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.88rem;
   font-weight: 700;
   color: #a98c5b;
 }
 
 .gift-product-card__btn {
+  font-family: var(--font-inter), sans-serif;
   background: #142a44;
   color: #fffdf9;
   border: none;
-  padding: 0.5rem 1.1rem;
+  padding: 0.35rem 0.7rem;
   border-radius: 30px;
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.08em;

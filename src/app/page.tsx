@@ -456,7 +456,7 @@ export default function Home() {
             </a>
           </div>
           <div
-            className="hero__couple-img-container reveal"
+            className="hero__couple-img-container"
             style={{ '--d': '1.3s' } as React.CSSProperties}
           >
             <img
@@ -1122,7 +1122,7 @@ function GiftsModal({
               </div>
 
               <div className="flex-1 overflow-y-auto min-h-0" data-lenis-prevent>
-              <div className="p-3 md:p-6 rounded-2xl border border-gold/10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full bg-gray-50/5" style={{ gridAutoRows: 'min-content' }}>
+              <div className="p-3 md:p-6 rounded-2xl border border-gold/10 gifts-grid bg-gray-50/5" style={{ gridAutoRows: 'min-content' }}>
                 {GIFTS_LIST.map((gift) => (
                   <div
                     key={gift.title}
