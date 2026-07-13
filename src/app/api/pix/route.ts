@@ -14,12 +14,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
-      return NextResponse.json(
-        { error: "O valor do PIX deve ser um número positivo maior que zero." },
-        { status: 400 }
-      );
-    }
+    // Convert amount to float if provided and positive. Otherwise, it is undefined (value-free static PIX).
+    const parsedAmount = amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0 
+      ? parseFloat(amount) 
+      : undefined;
 
     // Recupera configurações do arquivo .env
     const pixKey = process.env.NEXT_PUBLIC_PIX_KEY;
@@ -42,7 +40,7 @@ export async function POST(req: NextRequest) {
       key: pixKey,
       name: pixName,
       city: pixCity,
-      amount: parseFloat(amount),
+      amount: parsedAmount,
       description: description,
     });
 

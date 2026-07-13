@@ -7,25 +7,7 @@ import { WEDDING_CONFIG } from '@/config/wedding';
 import Lenis from 'lenis';
 import { motion, useScroll, useSpring } from 'motion/react';
 
-const GIFTS_LIST = [
-  { title: "1kg de café", priceBRL: 492, priceEUR: 75, image: "/gifts/gift_cafe.png" },
-  { title: "1 mês de almoço garantido em casa", priceBRL: 400, priceEUR: 60, image: "/gifts/gift_almoco.png" },
-  { title: "Academia para os noivos entrarem em forma depois da lua de mel", priceBRL: 480, priceEUR: 75, image: "/gifts/gift_academia.png" },
-  { title: "Acessório de última geração para cuidar da casa", priceBRL: 94, priceEUR: 15, image: "/gifts/gift_robot.png" },
-  { title: "Acessório para cortar a unha do dedão do noivo", priceBRL: 400, priceEUR: 60, image: "/gifts/gift_grinder.png" },
-  { title: "Balança para os noivos não engordarem após o casamento", priceBRL: 80, priceEUR: 15, image: "/gifts/gift_scale.png" },
-  { title: "Bolo de cenoura semanal para a noiva", priceBRL: 94, priceEUR: 15, image: "/gifts/gift_carrot_cake.png" },
-  { title: "Camisa do time de coração para a alegria do noivo", priceBRL: 240, priceEUR: 40, image: "/gifts/gift_football.png" },
-  { title: "Máscara de gás para trocar as fraldas do futuro filho", priceBRL: 265, priceEUR: 40, image: "/gifts/gift_gas_mask.png" },
-  { title: "Massagem relaxante para o noivo depois de ver a conta do casamento", priceBRL: 333, priceEUR: 50, image: "/gifts/gift_massage.png" },
-  { title: "Muito doce de leite para o noivo comer escondido da noiva", priceBRL: 107, priceEUR: 20, image: "/gifts/gift_dulce.png" },
-  { title: "Quer apostar que o noiva vai enfiar o pé na jaca na hora da cerimônia", priceBRL: 1997, priceEUR: 300, image: "/gifts/gift_jaca.png" },
-  { title: "Ferias para o noivo da uber", priceBRL: 134, priceEUR: 20, image: "/finalmente_uber.jpeg" },
-  { title: "aulas de natação", priceBRL: 67, priceEUR: 10, image: "/aula_de_natacao.jpeg" },
-  { title: "Rolo de macarrão para a noiva utilizar quando necessário", priceBRL: 147, priceEUR: 25, image: "/gifts/gift_rolling_pin.png" },
-  { title: "Saco e luva de boxe para os noivos aliviarem a tensão", priceBRL: 799, priceEUR: 120, image: "/gifts/gift_boxing.png" },
-  { title: "Contribuição Personalizada", priceBRL: 0, priceEUR: 0, image: "/gifts/gift_custom.png" },
-];
+
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -96,6 +78,23 @@ export default function Home() {
       }
     }
   }, [isGiftsModalOpen]);
+
+  // Observer for #presentes hash to open the PIX payment modal
+  useEffect(() => {
+    if (!mounted) return;
+
+    const handleHashChange = () => {
+      if (window.location.hash === '#presentes') {
+        setGiftsModalGift({ title: "Presente da Lista (PDF)", image: "/gifts/gift_custom.png" });
+        setGiftsModalRegion('BR');
+        setIsGiftsModalOpen(true);
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [mounted]);
 
   // 1. Mount effect & scroll triggers
   useEffect(() => {
@@ -456,7 +455,7 @@ export default function Home() {
             </a>
           </div>
           <div
-            className="hero__couple-img-container"
+            className="hero__couple-img-container reveal"
             style={{ '--d': '1.3s' } as React.CSSProperties}
           >
             <img
@@ -733,13 +732,15 @@ export default function Home() {
             </div>
           </div>
           <div className="flex justify-center mt-10 reveal-up">
-            <button
-              onClick={() => setIsGiftsModalOpen(true)}
+            <a
+              href="/Lista de Presentes - Jaqueline & Lucas.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-navy text-ivory hover:bg-gold hover:text-navy-dark transition-all duration-300 font-bold uppercase tracking-widest text-xs md:text-sm py-4 px-10 rounded-full shadow-lg hover:shadow-gold/20 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
               <Gift className="h-4 w-4 animate-bounce" />
-              Escolher da Lista de Presentes
-            </button>
+              Ver Lista de Presentes (PDF)
+            </a>
           </div>
         </div>
       </section>
@@ -944,100 +945,24 @@ export default function Home() {
   );
 }
 
-
-
 function GiftsModal({
   isOpen,
   onClose,
   initialGift = null,
-  initialRegion = 'EU'
+  initialRegion = 'BR'
 }: {
   isOpen: boolean;
   onClose: () => void;
-  initialGift?: { title: string, image: string, priceBRL?: number, priceEUR?: number } | null;
+  initialGift?: { title: string, image: string } | null;
   initialRegion?: 'EU' | 'BR';
 }) {
   const [copied, setCopied] = useState<string | null>(null);
-  const [selectedGift, setSelectedGift] = useState<{ title: string, image: string, priceBRL?: number, priceEUR?: number } | null>(null);
-
-  // States for the payment flow
-  const [step, setStep] = useState<'list' | 'value' | 'checkout_eu' | 'qrcode'>('list');
-  const [region, setRegion] = useState<'EU' | 'BR'>('EU');
-  const [currencyToggle, setCurrencyToggle] = useState<'EU' | 'BR'>('EU');
-  const [amount, setAmount] = useState<string>("");
+  const [region, setRegion] = useState<'EU' | 'BR'>('BR');
   const [pixData, setPixData] = useState<{ emv: string, qrCodeUrl: string } | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      if (initialGift) {
-        setSelectedGift(initialGift);
-        setStep('value');
-        setRegion(initialRegion);
-        setCurrencyToggle(initialRegion || 'EU');
-      } else {
-        setStep('list');
-        setCurrencyToggle('EU');
-      }
-    } else {
-      document.body.style.overflow = 'unset';
-      const t = setTimeout(() => {
-        setSelectedGift(null);
-        setStep('list');
-        setAmount("");
-        setPixData(null);
-        setErrorMsg("");
-        setRegion('EU');
-        setCurrencyToggle('EU');
-      }, 300);
-      return () => clearTimeout(t);
-    }
-    return () => { document.body.style.overflow = 'unset'; };
-  }, [isOpen, initialGift, initialRegion]);
-
-  if (!isOpen) return null;
-
-  const handleAmountChange = (val: string, currentRegion: 'EU' | 'BR') => {
-    const cleanVal = val.replace(/\D/g, "");
-    if (!cleanVal) {
-      setAmount("");
-      return;
-    }
-    const numeric = parseFloat(cleanVal) / 100;
-    if (currentRegion === 'BR') {
-      const formatted = numeric.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      });
-      setAmount(formatted);
-    } else {
-      const formatted = numeric.toLocaleString("pt-PT", {
-        style: "currency",
-        currency: "EUR",
-      });
-      setAmount(formatted);
-    }
-  };
-
-  const handleSelectSuggestedValue = (value: number, currentRegion: 'EU' | 'BR') => {
-    const cents = value * 100;
-    handleAmountChange(cents.toString(), currentRegion);
-  };
-
-  const getRawAmount = (formatted: string) => {
-    const cleanVal = formatted.replace(/\D/g, "");
-    return (parseFloat(cleanVal) / 100).toFixed(2);
-  };
-
-  const generatePix = async () => {
-    const rawValue = getRawAmount(amount);
-    if (!rawValue || parseFloat(rawValue) <= 0) {
-      setErrorMsg("Por favor, insira um valor válido.");
-      return;
-    }
-
+  const generatePixData = async (giftTitle: string) => {
     setIsGenerating(true);
     setErrorMsg("");
     try {
@@ -1045,8 +970,8 @@ function GiftsModal({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          giftTitle: selectedGift?.title,
-          amount: rawValue
+          giftTitle: giftTitle,
+          amount: "0"
         })
       });
 
@@ -1059,7 +984,6 @@ function GiftsModal({
         emv: data.pixCopiaECola,
         qrCodeUrl: data.qrCodeUrl
       });
-      setStep('qrcode');
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || "Ocorreu um erro ao gerar o PIX. Tente novamente.");
@@ -1068,17 +992,33 @@ function GiftsModal({
     }
   };
 
-  const handleSelectGift = (gift: { title: string, priceBRL: number, priceEUR: number, image: string }) => {
-    setSelectedGift(gift);
-    setStep('value');
-    setRegion(currencyToggle);
-    if (gift.priceBRL === 0) {
-      setAmount("");
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      setRegion(initialRegion);
+      if (initialRegion === 'BR') {
+        generatePixData(initialGift?.title || "Presente Livre");
+      }
     } else {
-      const price = currencyToggle === 'BR' ? gift.priceBRL : gift.priceEUR;
-      handleAmountChange((price * 100).toString(), currencyToggle);
+      document.body.style.overflow = 'unset';
+      const t = setTimeout(() => {
+        setPixData(null);
+        setErrorMsg("");
+      }, 300);
+      return () => clearTimeout(t);
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, initialGift, initialRegion]);
+
+  const handleRegionSwitch = (newRegion: 'EU' | 'BR') => {
+    setRegion(newRegion);
+    if (newRegion === 'BR' && !pixData && !isGenerating) {
+      generatePixData(initialGift?.title || "Presente Livre");
     }
   };
+
+  if (!isOpen) return null;
 
   const handleCopy = async (text: string, type: string) => {
     try {
@@ -1090,250 +1030,47 @@ function GiftsModal({
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-opacity duration-300">
-      <div className="bg-gradient-to-br from-navy-dark via-navy to-navy-dark w-[95vw] md:w-[80vw] max-w-4xl rounded-3xl shadow-2xl overflow-hidden relative border border-gold/15 h-[85vh] min-h-[500px] flex flex-col transition-transform duration-300 scale-100">
+      <div className="bg-gradient-to-br from-navy-dark via-navy to-navy-dark w-[95vw] md:w-[85vw] max-w-2xl rounded-3xl shadow-2xl overflow-hidden relative border border-gold/15 h-auto max-h-[90vh] flex flex-col transition-transform duration-300 scale-100 p-6 md:p-8">
         <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-gold/70 hover:text-gold transition-colors z-20 backdrop-blur-sm cursor-pointer">
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex-1 p-6 md:p-8 text-center flex flex-col min-h-0 relative text-cream">
-          {step === 'list' && (
-            <div className="w-full flex flex-col h-full relative z-10 animate-fadeIn">
-              <Gift className="w-10 h-10 text-gold mx-auto mb-4 drop-shadow-[0_0_12px_rgba(194,168,120,0.3)]" strokeWidth={1.5} />
-              <h3 className="font-serif text-3xl text-ivory mb-2 font-medium">Lista de Presentes</h3>
-              <p className="text-sm font-normal text-cream/70 leading-relaxed mb-6">
-                O maior presente é a sua presença! Mas se desejar, selecione uma cota divertida abaixo para nos abençoar.
-              </p>
+        <div className="w-full flex flex-col items-center justify-center relative z-10 text-cream">
+          <Gift className="w-8 h-8 text-gold mb-3 drop-shadow-[0_0_10px_rgba(194,168,120,0.3)]" strokeWidth={1.5} />
+          <h3 className="font-serif text-2xl text-ivory mb-2 font-medium">Contribuir com Presente</h3>
+          <p className="text-xs text-cream/70 leading-relaxed mb-5 max-w-md text-center">
+            {initialGift ? `Cota selecionada: "${initialGift.title}"` : "Apoie a nossa união com uma contribuição voluntária."}
+          </p>
 
-              <div className="flex rounded-xl bg-white/[0.04] p-1 border border-white/[0.08] mb-6 max-w-xs md:max-w-sm w-full mx-auto shadow-md">
-                <button
-                  type="button"
-                  onClick={() => setCurrencyToggle('EU')}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${currencyToggle === 'EU' ? 'bg-gold text-navy-dark shadow font-bold' : 'text-cream/60 hover:text-cream'}`}
-                >
-                  Portugal / Europa (€)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCurrencyToggle('BR')}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${currencyToggle === 'BR' ? 'bg-gold text-navy-dark shadow font-bold' : 'text-cream/60 hover:text-cream'}`}
-                >
-                  Brasil (R$ - Pix)
-                </button>
-              </div>
+          {/* Region Tabs */}
+          <div className="flex rounded-xl bg-white/[0.04] p-1 border border-white/[0.08] mb-6 max-w-xs md:max-w-sm w-full mx-auto shadow-md">
+            <button
+              type="button"
+              onClick={() => handleRegionSwitch('EU')}
+              className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${region === 'EU' ? 'bg-gold text-navy-dark shadow font-bold' : 'text-cream/60 hover:text-cream'}`}
+            >
+              Portugal / Europa (€)
+            </button>
+            <button
+              type="button"
+              onClick={() => handleRegionSwitch('BR')}
+              className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${region === 'BR' ? 'bg-gold text-navy-dark shadow font-bold' : 'text-cream/60 hover:text-cream'}`}
+            >
+              Brasil (R$ - Pix)
+            </button>
+          </div>
 
-              <div className="flex-1 overflow-y-auto min-h-0" data-lenis-prevent>
-              <div className="p-3 md:p-6 rounded-2xl border border-gold/10 gifts-grid bg-gray-50/5" style={{ gridAutoRows: 'min-content' }}>
-                {GIFTS_LIST.map((gift) => (
-                  <div
-                    key={gift.title}
-                    className="gift-product-card"
-                    onClick={() => handleSelectGift(gift)}
-                  >
-                    <div className="gift-product-card__img-wrap">
-                      <img
-                        src={gift.image}
-                        alt={gift.title}
-                        className="gift-product-card__img"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="gift-product-card__body">
-                      <h4 className="gift-product-card__title">
-                        {gift.title}
-                      </h4>
-                      <div className="gift-product-card__footer">
-                        <span className="gift-product-card__price">
-                          {gift.priceBRL === 0 ? (
-                            "Valor Livre"
-                          ) : currencyToggle === 'BR' ? (
-                            gift.priceBRL.toLocaleString('pt-BR', {
-                              style: 'currency',
-                              currency: 'BRL',
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 0
-                            })
-                          ) : (
-                            gift.priceEUR.toLocaleString('pt-PT', {
-                              style: 'currency',
-                              currency: 'EUR',
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 0
-                            })
-                          )}
-                        </span>
-                        <button className="gift-product-card__btn">
-                          Oferecer
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              </div>
-            </div>
+          {/* Error Message */}
+          {errorMsg && (
+            <p className="text-xs md:text-sm text-red-400 font-medium leading-relaxed bg-red-950/20 p-3 mb-4 rounded-xl border border-red-900/30 w-full max-w-md mx-auto">
+              {errorMsg}
+            </p>
           )}
 
-          {step === 'value' && selectedGift && (
-            <div className="w-full h-full flex flex-col items-center justify-center pt-8 relative z-10 animate-fadeIn">
-              <button
-                onClick={() => {
-                  setSelectedGift(null);
-                  setStep('list');
-                  setAmount("");
-                  setErrorMsg("");
-                }}
-                className="absolute left-4 top-4 flex items-center gap-2 text-gold/50 hover:text-gold transition-colors focus:outline-none z-20 bg-white/[0.06] hover:bg-white/[0.12] px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/[0.06] cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="text-[11px] md:text-xs uppercase tracking-widest font-bold">Voltar</span>
-              </button>
-
-              <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-gold/20 mx-auto border-4 border-gold/40 overflow-hidden relative">
-                <img src={selectedGift.image} alt={selectedGift.title} className="w-full h-full object-cover" />
-              </div>
-
-              <h3 className="font-serif text-xl md:text-2xl text-ivory mb-2 font-medium leading-relaxed">
-                Contribuir para:<br />
-                <span className="text-gold/80 italic">"{selectedGift.title}"</span>
-              </h3>
-
-              <p className="text-xs text-gold/60 uppercase tracking-widest font-medium mb-4">
-                Escolha a sua região e o valor do presente
-              </p>
-
-              <div className="w-full max-w-sm px-4 flex flex-col gap-4">
-                <div className="flex rounded-xl bg-white/[0.04] p-1 border border-white/[0.08] mb-2">
-                  <button
-                    type="button"
-                    onClick={() => { setRegion('EU'); setAmount(""); setErrorMsg(""); }}
-                    className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${region === 'EU' ? 'bg-gold text-navy-dark shadow font-bold' : 'text-cream/60 hover:text-cream'}`}
-                  >
-                    Portugal / Europa (€)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setRegion('BR'); setAmount(""); setErrorMsg(""); }}
-                    className={`flex-1 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer ${region === 'BR' ? 'bg-gold text-navy-dark shadow font-bold' : 'text-cream/60 hover:text-cream'}`}
-                  >
-                    Brasil (R$ - Pix)
-                  </button>
-                </div>
-
-                <div className="relative rounded-xl border border-gold/35 bg-white/[0.02] p-3 shadow-inner focus-within:border-gold transition-colors">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-medium text-gold/60">
-                    {region === 'BR' ? 'R$' : '€'}
-                  </span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={region === 'BR' ? amount.replace("R$", "").trim() : amount.replace("€", "").trim()}
-                    onChange={(e) => handleAmountChange(e.target.value, region)}
-                    placeholder="0,00"
-                    className="w-full text-center text-2xl font-semibold bg-transparent border-none text-ivory placeholder-ivory/20 focus:outline-none pl-8 pr-2"
-                  />
-                </div>
-
-                <div className="grid grid-cols-4 gap-2">
-                  {(region === 'BR' ? [100, 200, 500, 1000] : [20, 50, 100, 200]).map((val) => (
-                    <button
-                      key={val}
-                      type="button"
-                      onClick={() => handleSelectSuggestedValue(val, region)}
-                      className={`py-2 rounded-lg text-xs md:text-sm font-medium border transition-all cursor-pointer ${amount.includes(val.toString()) && amount.length < 13
-                        ? "bg-gold border-transparent text-navy-dark shadow font-bold"
-                        : "bg-white/[0.04] border-gold/15 text-gold/80 hover:bg-white/[0.08] hover:text-gold"
-                        }`}
-                    >
-                      {region === 'BR' ? `R$ ${val}` : `${val} €`}
-                    </button>
-                  ))}
-                </div>
-
-                {errorMsg && (
-                  <p className="text-xs md:text-sm text-red-400 font-medium leading-relaxed bg-red-950/20 p-2 rounded-lg border border-red-900/30">
-                    {errorMsg}
-                  </p>
-                )}
-
-                {region === 'EU' ? (
-                  <button
-                    onClick={() => {
-                      if (!amount || parseFloat(getRawAmount(amount)) <= 0) {
-                        setErrorMsg("Por favor, insira um valor válido.");
-                        return;
-                      }
-                      setStep('checkout_eu');
-                    }}
-                    disabled={!amount}
-                    className="w-full py-3.5 rounded-full font-bold text-sm tracking-widest uppercase cursor-pointer transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98] mt-2 bg-gold text-navy-dark hover:bg-gold-deep border border-transparent"
-                  >
-                    Confirmar Presente
-                  </button>
-                ) : (
-                  <button
-                    onClick={generatePix}
-                    disabled={isGenerating || !amount}
-                    className="w-full py-3.5 rounded-full font-bold text-sm tracking-widest uppercase cursor-pointer transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98] mt-2 relative overflow-hidden flex items-center justify-center gap-2 bg-gold text-navy-dark hover:bg-gold-deep border border-transparent"
-                  >
-                    {isGenerating ? (
-                      <>
-                        <svg className="animate-spin h-4 w-4 text-navy-dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span>Gerando Pix...</span>
-                      </>
-                    ) : (
-                      <span>Gerar PIX</span>
-                    )}
-                  </button>
-                )}
-                {region === 'BR' && (
-                  <div className="mt-4 p-4 rounded-2xl bg-white/[0.03] border border-gold/15 backdrop-blur-sm shadow-md">
-                    <p className="text-[10px] text-cream/70 uppercase tracking-widest font-semibold mb-2">
-                      Ou transfira para a chave PIX direta (CPF)
-                    </p>
-                    <div className="flex items-center justify-between bg-white/[0.04] px-4 py-2.5 rounded-xl border border-gold/5">
-                      <span className="text-xs md:text-sm font-semibold text-ivory font-mono">{WEDDING_CONFIG.pix}</span>
-                      <button
-                        onClick={() => handleCopy(WEDDING_CONFIG.pix, 'pix')}
-                        className="p-2 rounded-full bg-gold/10 hover:bg-gold/25 text-gold transition-all cursor-pointer"
-                        title="Copiar Chave PIX"
-                      >
-                        {copied === 'pix' ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
-                    <p className="text-[10px] text-cream/40 mt-2 leading-relaxed">
-                      Titular: Lucas Alves da Silva
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {step === 'checkout_eu' && selectedGift && (
-            <div className="w-full h-full flex flex-col items-center justify-center pt-8 relative z-10 animate-fadeIn">
-              <button
-                onClick={() => setStep('value')}
-                className="absolute left-4 top-4 flex items-center gap-2 text-gold/50 hover:text-gold transition-colors focus:outline-none z-20 bg-white/[0.06] hover:bg-white/[0.12] px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/[0.06] cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="text-[11px] md:text-xs uppercase tracking-widest font-bold">Voltar</span>
-              </button>
-
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mb-3 shadow-md mx-auto border-2 border-gold/40 overflow-hidden relative">
-                <img src={selectedGift.image} alt={selectedGift.title} className="w-full h-full object-cover" />
-              </div>
-
-              <h3 className="font-serif text-lg md:text-xl text-ivory mb-1 font-medium leading-relaxed">
-                Quase lá! Transfira o seu presente
-              </h3>
-              <p className="text-xs text-gold/80 font-medium mb-6 bg-white/[0.04] border border-gold/10 px-3 py-1 rounded-full backdrop-blur-sm">
-                Cota de presente: {amount}
-              </p>
-
-              <div className="w-full max-w-md px-4 flex flex-col gap-4">
+          {/* Europe Flow */}
+          {region === 'EU' && (
+            <div className="w-full flex flex-col items-center animate-fadeIn max-w-md">
+              <div className="w-full flex flex-col gap-4">
                 <div className="bg-white/[0.03] border border-gold/15 rounded-2xl p-4 flex flex-col gap-2 relative shadow-md">
                   <div className="flex items-center justify-between">
                     <span className="text-xs uppercase tracking-wider text-gold/60 font-bold">📱 Opção 1: MB WAY</span>
@@ -1348,7 +1085,7 @@ function GiftsModal({
                     </button>
                   </div>
                   <p className="text-[10px] text-cream/50 text-left leading-relaxed mt-1">
-                    * Ao enviar por MB WAY, por favor adicione na descrição da app: <strong className="text-gold/80">"Presente: {selectedGift.title.substring(0, 15)}"</strong>.
+                    * Ao enviar por MB WAY, por favor adicione na descrição da app: <strong className="text-gold/80">"Presente: {initialGift?.title.substring(0, 15) || 'Livre'}"</strong>.
                   </p>
                 </div>
 
@@ -1377,56 +1114,45 @@ function GiftsModal({
             </div>
           )}
 
-          {step === 'qrcode' && selectedGift && pixData && (
-            <div className="w-full h-full flex flex-col items-center justify-center pt-8 relative z-10 animate-fadeIn">
-              <button
-                onClick={() => {
-                  setStep('value');
-                  setCopied(null);
-                }}
-                className="absolute left-4 top-4 flex items-center gap-2 text-gold/50 hover:text-gold transition-colors focus:outline-none z-20 bg-white/[0.06] hover:bg-white/[0.12] px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/[0.06] cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="text-[11px] md:text-xs uppercase tracking-widest font-bold">Voltar</span>
-              </button>
-
-              <div className="w-16 h-16 rounded-full border border-gold/20 flex items-center justify-center mb-3 shadow-md overflow-hidden relative">
-                <img src={selectedGift.image} alt={selectedGift.title} className="w-full h-full object-cover" />
-              </div>
-
-              <h3 className="font-serif text-lg md:text-xl text-ivory mb-1 font-medium leading-relaxed">
-                Quase lá! Escaneie o PIX abaixo
-              </h3>
-              <p className="text-xs text-gold/80 font-medium mb-5 bg-white/[0.04] border border-gold/10 px-3 py-1 rounded-full backdrop-blur-sm">
-                Cota de presente: {amount}
-              </p>
-
-              <div className="flex flex-col items-center w-full max-w-sm px-4">
-                <div className="w-44 h-44 md:w-52 md:h-52 bg-white rounded-2xl shadow-lg border border-gold/10 mb-6 p-4 relative overflow-hidden flex items-center justify-center">
-                  <img
-                    src={pixData.qrCodeUrl}
-                    alt="QR Code PIX"
-                    className="w-full h-full object-contain"
-                  />
+          {/* Brazil Flow */}
+          {region === 'BR' && (
+            <div className="w-full flex flex-col items-center animate-fadeIn max-w-sm">
+              {isGenerating ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <svg className="animate-spin h-8 w-8 text-gold mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <p className="text-xs text-cream/60">Gerando QR Code PIX...</p>
                 </div>
+              ) : pixData ? (
+                <div className="flex flex-col items-center w-full">
+                  <div className="w-40 h-40 md:w-44 md:h-44 bg-white rounded-2xl shadow-lg border border-gold/10 mb-4 p-4 relative overflow-hidden flex items-center justify-center">
+                    <img
+                      src={pixData.qrCodeUrl}
+                      alt="QR Code PIX"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
 
-                <div
-                  className="flex items-center gap-3 bg-white/[0.08] backdrop-blur-sm px-4 py-2.5 border border-gold/15 rounded-full group cursor-pointer hover:bg-white/[0.14] transition-colors w-full shadow-sm"
-                  onClick={() => handleCopy(pixData.emv, 'pix')}
-                >
-                  <div className="flex flex-col items-start flex-1 px-2 border-r border-gold/15 overflow-hidden">
-                    <span className="text-[11px] uppercase tracking-[0.2em] text-gold/50 font-bold mb-0.5">PIX Copia e Cola</span>
-                    <span className="text-xs md:text-sm font-medium text-ivory/90 truncate w-full text-left">{pixData.emv}</span>
+                  <div
+                    className="flex items-center gap-3 bg-white/[0.08] backdrop-blur-sm px-4 py-2 border border-gold/15 rounded-full group cursor-pointer hover:bg-white/[0.12] transition-colors w-full shadow-sm"
+                    onClick={() => handleCopy(pixData.emv, 'pix')}
+                  >
+                    <div className="flex flex-col items-start flex-1 px-2 border-r border-gold/15 overflow-hidden">
+                      <span className="text-[9px] uppercase tracking-[0.2em] text-gold/50 font-bold mb-0.5">PIX Copia e Cola</span>
+                      <span className="text-[11px] md:text-xs font-medium text-ivory/90 truncate w-full text-left font-mono">{pixData.emv}</span>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center group-hover:bg-gold/25 transition-colors ml-1 shrink-0">
+                      {copied === 'pix' ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3 text-gold/70" />}
+                    </div>
                   </div>
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gold/10 flex items-center justify-center group-hover:bg-gold/25 transition-colors ml-1 shrink-0">
-                    {copied === 'pix' ? <Check className="w-3.5 h-3.5 md:w-4 md:h-4 text-green-400" /> : <Copy className="w-3.5 h-3.5 md:w-4 md:h-4 text-gold/70" />}
-                  </div>
+
+                  <p className="text-[10px] text-ivory/40 text-center mt-4 leading-relaxed">
+                    Muito obrigado por fazer parte da nossa história e contribuir com o nosso lar! 💖
+                  </p>
                 </div>
-
-                <p className="text-[10px] text-ivory/40 text-center mt-4 leading-relaxed">
-                  Muito obrigado por fazer parte da nossa história e contribuir com o nosso lar! 💖
-                </p>
-              </div>
+              ) : null}
             </div>
           )}
         </div>

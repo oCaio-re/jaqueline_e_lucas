@@ -17,10 +17,10 @@ The response submitted by a Guest, marking their presence ("Sim") or absence ("N
 The master list of all invited Guests stored in the database.
 
 ### Presente (Gift)
-A symbolic wedding gift (e.g., "Romance Dinner", "Spa Day") chosen by a Guest to support the couple. Gifts are represented visually and have suggested monetary values, but the actual transaction is voluntary.
+A symbolic wedding gift (e.g., "Aula de natação", "Férias da Uber") chosen by a Guest to support the couple. Gifts are represented visually in the PDF file and do not have pre-established values; the actual transaction and amount are completely voluntary.
 
 ### Lista de Presentes (Gift List)
-A curated list of symbolic Gifts displayed on the website. Guests can select a Gift, customize or choose a suggested monetary value, and receive instructions on how to transfer the funds.
+A symbolic PDF list of gifts ("Lista de Presentes - Jaqueline & Lucas.pdf") opened via the main page button. Clicking on any item inside the PDF redirects the Guest back to the website at `#presentes`, which automatically triggers a modal displaying region-based payment details (free-amount Pix or IBAN/MB WAY).
 
 ### Pix
 A Brazilian instant payment system. If selected as the payment method for a Gift, the system generates a dynamic BR Code payload (including the amount and a description) and displays a QR Code along with a copy-paste code.
@@ -45,4 +45,4 @@ To mirror the sibling project, admin modifications (adding a new guest or deleti
 Phone matching cleans all non-digits, strips the Portuguese country code (`351`) if present, and compares the remaining 9-digit national number. This permits flexible guest inputs (e.g., matching `+351 912345678` with `912345678`).
 
 ### 6. Currencies and Regions (Gift List)
-The symbolic gift list supports dual currencies: Euros (€) and Reais (R$). Guests can switch between currencies via a segmented tab control at the top of the list, which immediately changes the displayed prices to pre-defined, rounded values for each currency. The selected currency is automatically synchronized as the default payment region (Europe for € or Brazil for R$) when proceeding to the contribution checkout step.
+The symbolic gift list resides in a PDF file. Guests can switch payment regions inside the payment modal using a segmented tab control at the top ("Brasil (R$ - Pix)" and "Portugal / Europa (€)"). Selecting a region instantly renders the corresponding payment method (MB WAY/IBAN or dynamic Pix QR Code) with a voluntary amount ("Valor Livre").
