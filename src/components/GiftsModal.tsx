@@ -104,9 +104,9 @@ export default function GiftsModal({ isOpen, onClose }: GiftsModalProps) {
       if (!res.ok) throw new Error(data.error || 'Erro ao gerar PIX');
       setPixData({ emv: data.pixCopiaECola, qrCodeUrl: data.qrCodeUrl });
       setStep('qrcode');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setErrorMsg(err.message || 'Ocorreu um erro ao gerar o PIX. Tente novamente.');
+      setErrorMsg(err instanceof Error ? err.message : 'Ocorreu um erro ao gerar o PIX. Tente novamente.');
     } finally {
       setIsGenerating(false);
     }

@@ -607,7 +607,7 @@ export default function Home() {
               <span className="schedule__time">16:30</span>
               <span className="schedule__dot"></span>
               <div>
-                <h3>Sunset &amp; Corte do Bolo</h3>
+                <h3>Sobremesa &amp; Corte do Bolo</h3>
                 <p>Ao pôr do sol, cortamos o bolo — servido como sobremesa.</p>
               </div>
             </div>
@@ -957,12 +957,29 @@ function GiftsModal({
   initialRegion?: 'EU' | 'BR';
 }) {
   const [copied, setCopied] = useState<string | null>(null);
-  const [region, setRegion] = useState<'EU' | 'BR'>('BR');
+  const [region, setRegion] = useState<'EU' | 'BR'>(initialRegion);
+  const [amount, setAmount] = useState<string>("R$ 100,00");
   const [pixData, setPixData] = useState<{ emv: string, qrCodeUrl: string } | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  const generatePixData = async (giftTitle: string) => {
+  const handleAmountChange = (val: string) => {
+    const cleanVal = val.replace(/\D/g, "");
+    if (!cleanVal) {
+      setAmount("");
+      return;
+    }
+    const numeric = parseFloat(cleanVal) / 100;
+    const formatted = numeric.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    setAmount(formatted);
+  };
+
+  const handleSelectSuggestedValue = (value: number) => {
+    const cents = value * 100;
+    handleAmountChange(cents.toString());
+  };
+
+  const generatePixData = async (giftTitle: string, amountVal: string) => {
     setIsGenerating(true);
     setErrorMsg("");
     try {
@@ -971,7 +988,7 @@ function GiftsModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           giftTitle: giftTitle,
-          amount: "0"
+          amount: amountVal
         })
       });
 
@@ -984,9 +1001,9 @@ function GiftsModal({
         emv: data.pixCopiaECola,
         qrCodeUrl: data.qrCodeUrl
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setErrorMsg(err.message || "Ocorreu um erro ao gerar o PIX. Tente novamente.");
+      setErrorMsg(err instanceof Error ? err.message : "Ocorreu um erro ao gerar o PIX. Tente novamente.");
     } finally {
       setIsGenerating(false);
     }
@@ -995,27 +1012,20 @@ function GiftsModal({
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      setRegion(initialRegion);
-      if (initialRegion === 'BR') {
-        generatePixData(initialGift?.title || "Presente Livre");
-      }
     } else {
       document.body.style.overflow = 'unset';
       const t = setTimeout(() => {
         setPixData(null);
         setErrorMsg("");
+        setAmount("R$ 100,00");
       }, 300);
       return () => clearTimeout(t);
     }
     return () => { document.body.style.overflow = 'unset'; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, initialGift, initialRegion]);
+  }, [isOpen]);
 
   const handleRegionSwitch = (newRegion: 'EU' | 'BR') => {
     setRegion(newRegion);
-    if (newRegion === 'BR' && !pixData && !isGenerating) {
-      generatePixData(initialGift?.title || "Presente Livre");
-    }
   };
 
   if (!isOpen) return null;
@@ -1025,7 +1035,7 @@ function GiftsModal({
       await navigator.clipboard.writeText(text);
       setCopied(type);
       setTimeout(() => setCopied(null), 2000);
-    } catch (_) { }
+    } catch { }
   };
 
   return (
@@ -1085,7 +1095,7 @@ function GiftsModal({
                     </button>
                   </div>
                   <p className="text-[10px] text-cream/50 text-left leading-relaxed mt-1">
-                    * Ao enviar por MB WAY, por favor adicione na descrição da app: <strong className="text-gold/80">"Presente: {initialGift?.title.substring(0, 15) || 'Livre'}"</strong>.
+                    * Ao enviar por MB WAY, por favor adicione na descrição da app: <strong className="text-gold/80">&ldquo;Presente: {initialGift?.title.substring(0, 15) || 'Livre'}&rdquo;</strong>.
                   </p>
                 </div>
 
@@ -1136,7 +1146,7 @@ function GiftsModal({
                   </div>
 
                   <div
-                    className="flex items-center gap-3 bg-white/[0.08] backdrop-blur-sm px-4 py-2 border border-gold/15 rounded-full group cursor-pointer hover:bg-white/[0.12] transition-colors w-full shadow-sm"
+                    className="flex items-center gap-3 bg-white/[0.08] backdrop-blur-sm px-4 py-2 border border-gold/15 rounded-full group cursor-pointer hover:bg-white/[0.12] transition-colors w-full shadow-sm mb-4"
                     onClick={() => handleCopy(pixData.emv, 'pix')}
                   >
                     <div className="flex flex-col items-start flex-1 px-2 border-r border-gold/15 overflow-hidden">
@@ -1148,11 +1158,62 @@ function GiftsModal({
                     </div>
                   </div>
 
+                  <button
+                    type="button"
+                    onClick={() => setPixData(null)}
+                    className="inline-flex items-center gap-2 text-xs font-semibold text-gold hover:text-gold-light hover:underline transition-all cursor-pointer mb-2"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    Alterar valor da contribuição
+                  </button>
+
                   <p className="text-[10px] text-ivory/40 text-center mt-4 leading-relaxed">
                     Muito obrigado por fazer parte da nossa história e contribuir com o nosso lar! 💖
                   </p>
                 </div>
-              ) : null}
+              ) : (
+                <div className="w-full flex flex-col gap-4">
+                  <div className="flex flex-col items-start gap-1.5 w-full">
+                    <label htmlFor="pixAmount" className="text-xs uppercase tracking-wider text-gold/60 font-bold">
+                      Valor da Contribuição (R$)
+                    </label>
+                    <input
+                      id="pixAmount"
+                      type="text"
+                      value={amount}
+                      onChange={(e) => handleAmountChange(e.target.value)}
+                      placeholder="R$ 0,00"
+                      className="w-full bg-white/[0.04] border border-gold/20 rounded-xl px-4 py-3 text-lg font-semibold text-ivory focus:outline-none focus:border-gold/50 transition-colors text-center"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-2 w-full">
+                    {[50, 100, 200, 500].map((val) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => handleSelectSuggestedValue(val)}
+                        className="py-2 px-3 rounded-lg text-xs font-semibold border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.08] hover:border-gold/30 text-cream/80 hover:text-gold transition-all cursor-pointer"
+                      >
+                        R$ {val}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={!amount || parseFloat(amount.replace(/\D/g, "")) <= 0}
+                    onClick={() => {
+                      const cleanVal = amount.replace(/\D/g, "");
+                      const rawValue = (parseFloat(cleanVal) / 100).toFixed(2);
+                      generatePixData(initialGift?.title || "Presente Livre", rawValue);
+                    }}
+                    className="w-full py-3.5 px-6 rounded-xl bg-gold hover:bg-gold-light text-navy-dark font-bold uppercase tracking-wider text-xs shadow-lg shadow-gold/10 hover:shadow-gold/20 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none mt-2"
+                  >
+                    Gerar QR Code PIX
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
