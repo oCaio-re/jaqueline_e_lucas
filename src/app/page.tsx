@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Copy, Check, Calendar, MapPin, X, Gift, ArrowLeft, Landmark, Smartphone, Church, Sparkles } from 'lucide-react';
+import { Copy, Check, Calendar, MapPin, X, Gift, ArrowLeft, Landmark, Smartphone, Church, Sparkles, Pencil } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { WEDDING_CONFIG } from '@/config/wedding';
 import Lenis from 'lenis';
@@ -958,7 +958,8 @@ function GiftsModal({
 }) {
   const [copied, setCopied] = useState<string | null>(null);
   const [region, setRegion] = useState<'EU' | 'BR'>(initialRegion);
-  const [amount, setAmount] = useState<string>("R$ 100,00");
+  const [amount, setAmount] = useState<string>("R$ 0,00");
+  const [isFocused, setIsFocused] = useState(false);
   const [pixData, setPixData] = useState<{ emv: string, qrCodeUrl: string } | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -977,6 +978,20 @@ function GiftsModal({
   const handleSelectSuggestedValue = (value: number) => {
     const cents = value * 100;
     handleAmountChange(cents.toString());
+  };
+
+  const handleFocus = () => {
+    setIsFocused(true);
+    if (amount === "R$ 0,00") {
+      setAmount("");
+    }
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    if (amount === "") {
+      setAmount("R$ 0,00");
+    }
   };
 
   const generatePixData = async (giftTitle: string, amountVal: string) => {
@@ -1017,7 +1032,7 @@ function GiftsModal({
       const t = setTimeout(() => {
         setPixData(null);
         setErrorMsg("");
-        setAmount("R$ 100,00");
+        setAmount("R$ 0,00");
       }, 300);
       return () => clearTimeout(t);
     }
@@ -1173,31 +1188,51 @@ function GiftsModal({
                 </div>
               ) : (
                 <div className="w-full flex flex-col gap-4">
-                  <div className="flex flex-col items-start gap-1.5 w-full">
-                    <label htmlFor="pixAmount" className="text-xs uppercase tracking-wider text-gold/60 font-bold">
+                  <div className="flex flex-col items-center gap-2 w-full pt-4">
+                    <label htmlFor="pixAmount" className="text-xs uppercase tracking-wider text-gold/60 font-bold text-center mb-4">
                       Valor da Contribuição (R$)
                     </label>
-                    <input
-                      id="pixAmount"
-                      type="text"
-                      value={amount}
-                      onChange={(e) => handleAmountChange(e.target.value)}
-                      placeholder="R$ 0,00"
-                      className="w-full bg-white/[0.04] border border-gold/20 rounded-xl px-4 py-3 text-lg font-semibold text-ivory focus:outline-none focus:border-gold/50 transition-colors text-center"
-                    />
+                    <div className="relative w-full">
+                      {!isFocused && (!amount || parseFloat(amount.replace(/\D/g, "")) === 0) && (
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce pointer-events-none z-20">
+                          <span className="text-xl">👇</span>
+                        </div>
+                      )}
+                      <div className="relative w-full flex items-center bg-white/[0.04] border border-gold/30 hover:border-gold/50 focus-within:border-gold focus-within:ring-2 focus-within:ring-gold/20 rounded-2xl px-4 py-3 transition-all">
+                        <input
+                          id="pixAmount"
+                          type="text"
+                          value={amount}
+                          onChange={(e) => handleAmountChange(e.target.value)}
+                          onFocus={handleFocus}
+                          onBlur={handleBlur}
+                          placeholder="R$ 0,00"
+                          className="w-full bg-transparent text-2xl font-semibold text-ivory placeholder-cream/30 focus:outline-none text-center pr-8 font-mono"
+                        />
+                        <Pencil className="absolute right-4 w-4 h-4 text-gold/50 pointer-events-none shrink-0" />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-cream/60 text-center leading-relaxed">
+                      ✍️ O campo acima é <strong className="text-gold">totalmente editável</strong>. Clique nele e digite o valor que desejar!
+                    </p>
                   </div>
 
-                  <div className="grid grid-cols-4 gap-2 w-full">
-                    {[50, 100, 200, 500].map((val) => (
-                      <button
-                        key={val}
-                        type="button"
-                        onClick={() => handleSelectSuggestedValue(val)}
-                        className="py-2 px-3 rounded-lg text-xs font-semibold border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.08] hover:border-gold/30 text-cream/80 hover:text-gold transition-all cursor-pointer"
-                      >
-                        R$ {val}
-                      </button>
-                    ))}
+                  <div className="flex flex-col gap-2 w-full mt-1">
+                    <span className="text-[10px] uppercase tracking-wider text-cream/50 font-semibold text-left">
+                      Ou selecione um valor sugerido:
+                    </span>
+                    <div className="grid grid-cols-4 gap-2 w-full">
+                      {[50, 100, 200, 500].map((val) => (
+                        <button
+                          key={val}
+                          type="button"
+                          onClick={() => handleSelectSuggestedValue(val)}
+                          className="py-2 px-3 rounded-lg text-xs font-semibold border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.08] hover:border-gold/30 text-cream/80 hover:text-gold transition-all cursor-pointer"
+                        >
+                          R$ {val}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <button
