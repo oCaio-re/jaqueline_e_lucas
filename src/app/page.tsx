@@ -614,7 +614,7 @@ export default function Home() {
               <span className="schedule__dot"></span>
               <div>
                 <h3>Sobremesa &amp; Corte do Bolo</h3>
-                <p>Ao pôr do sol, cortamos o bolo — servido como sobremesa.</p>
+                <p>Será servido a sobremesa e faremos o corte de bolo em seguida.</p>
               </div>
             </div>
             <div className="schedule__item reveal-up">
