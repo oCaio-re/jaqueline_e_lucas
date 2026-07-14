@@ -13,7 +13,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [loaderDone, setLoaderDone] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [petals, setPetals] = useState<Array<{ left: string; size: number; duration: string; delay: string; opacity: number }>>([]);
+  const [petals, setPetals] = useState<Array<{ left: string; size: number; duration: string; delay: string; opacity: number; color: string }>>([]);
 
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -100,13 +100,16 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
 
-    const generated = Array.from({ length: 24 }).map(() => ({
-      left: `${Math.random() * 100}%`,
-      size: 6 + Math.random() * 12,
-      duration: `${12 + Math.random() * 12}s`,
-      delay: `${Math.random() * 12}s`,
-      opacity: 0.2 + Math.random() * 0.4,
-    }));
+    const generated = Array.from({ length: 60 }).map(() => {
+      return {
+        left: `${Math.random() * 100}%`,
+        size: 6 + Math.random() * 12,
+        duration: `${9 + Math.random() * 9}s`, // Slower: 9s to 18s
+        delay: `-${Math.random() * 18}s`, // Pre-loaded: starts mid-animation
+        opacity: 0.65 + Math.random() * 0.3, // High visibility: 0.65 to 0.95
+        color: '#967567', // Softer warm brown for contrast on cream background
+      };
+    });
     setPetals(generated);
 
     // Hide loader after 1.6s
@@ -427,6 +430,9 @@ export default function Home() {
                 animationDuration: petal.duration,
                 animationDelay: petal.delay,
                 opacity: petal.opacity,
+                background: petal.color,
+                boxShadow: '1px 2px 4px rgba(0,0,0,0.12)',
+                border: '0.5px solid rgba(0,0,0,0.06)',
               };
               return <span key={i} className="petal" style={style} />;
             })}
